@@ -1,7 +1,11 @@
+require('dotenv').config();
+const cors = require('cors');
 const express = require('express');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+
+app.use(cors());
 
 app.listen(PORT, () => {
     console.log(`Server listen to http://localhost:${PORT}`);
