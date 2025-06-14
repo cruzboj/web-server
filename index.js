@@ -11,6 +11,10 @@ app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
+app.get('/test', (req, res) => {
+    res.send('Test!');
+});
+
 const path = require('path');
 app.get('/cards', (req, res) => {
     res.sendFile(path.join(__dirname, 'data', 'cards.json'));
