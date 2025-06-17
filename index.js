@@ -2,18 +2,17 @@ require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
 const app = express();
+const fs = require('fs');
+
+console.log(fs.existsSync(__dirname + '/image/Pack1-Header.png'));
 
 const PORT = process.env.PORT || 8080;
 app.use(cors());
 
-/*
-  API Key: 2X6nJ0ypZg0zYl1Xaqe1Xndxq7vHptaNIEc
-  https://api.giphy.com
-*/
+let api = process.env.API_URL;
+let apikey = `&api_key=${process.env.API_KEY}`;
 
-let api = "https://api.giphy.com/v1/gifs/search?";
-let apikey = "&api_key=nJ0ypZg0zYl1Xaqe1Xndxq7vHptaNIEc"
-let qyery = "&q=brainrot";
+let query = "&q=brainrot";
 let limit = "&limit=100";
 
 const Rnum = Math.floor(Math.random() * 100);
@@ -24,38 +23,102 @@ app.get('/', (req, res) => {
 });
 
 app.get('/test', (req, res) => {
-    res.send('Test!');
+  res.json({ message: 'Test!' });
 });
 
-app.get('/cards', (req, res) => {
-    const Rnum = Math.floor(Math.random() * 100);
-    const url = api + apikey + qyery + limit;
-    
-    fetch(url).then(response => response.json())
-      .then(data => {
-        if(!data.data || data.data.length === 0) {
-          res.status(404).send('No data found');
-          return;
-        } else {
-          const shuffled = data.data.sort(() => 0.5 - Math.random());
-          const selected = shuffled.slice(0, 6);
-  
-          const cards = selected.map((gif, index) => ({
-            id: index + 1,
-            name: gif.title || `Gif ${index + 1}`,
-            image: gif.images.original.url,
-            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-          }));
-            res.json(cards);
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        res.status(500).send('Internal Server Error');
-      });
-    // שורה זו לא צריכה להיות פה
-    // res.sendFile(path.join(__dirname, 'data', 'cards.json'));
+app.use('/image', express.static(__dirname + '/image'));
+
+const packsData = [
+  {
+    id: 1,
+    header: 'image/Pack1-Header.png',
+    body: 'image/Pack1-Body.png',
+    query: '&q=brainrot'
+  },
+  {
+    id: 2,
+    header: 'image/Pack2-Header.png',
+    body: 'image/Pack2-Body.png',
+    query: '&q=Pokemon'
+  },
+  {
+    id: 3,
+    header: 'image/Pack3-Header.png',
+    body: 'image/Pack3-Body.png',
+    query: '&q=one-piece'
+  },
+  {
+    id: 4,
+    header: 'image/Pack4-Header.png',
+    body: 'image/Pack4-Body.png',
+    query: '&q=DragonBall'
+  }
+];
+
+app.get('/packs', (req, res) => {
+  res.json(packsData);
 });
+
+
+app.get('/cards', (req, res) => {
+  const cardsData = req.query.q;
+  if (!cardsData) {
+    return res.status(400).send('Missing query');
+  }
+  const url = `${api}${apikey}&q=${cardsData}&limit=100`;
+  fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+            if (!data.data || data.data.length === 0) {
+                return res.status(404).send('No data found');
+            }
+
+            const shuffled = data.data.sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 6);
+
+            const cards = selected.map((gif, index) => ({
+                id: index + 1,
+                name: gif.title || `Gif ${index + 1}`,
+                image: gif.images.original.url,
+                description: "Lorem Ipsum is simply dummy text."
+            }));
+
+            res.json(cards);
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error);
+            res.status(500).send('Internal Server Error');
+        });
+});
+// app.get('/cards', (req, res) => {
+//     const Rnum = Math.floor(Math.random() * 100);
+//     const url = api + apikey + query + limit;
+    
+//     fetch(url).then(response => response.json())
+//       .then(data => {
+//         if(!data.data || data.data.length === 0) {
+//           res.status(404).send('No data found');
+//           return;
+//         } else {
+//           const shuffled = data.data.sort(() => 0.5 - Math.random());
+//           const selected = shuffled.slice(0, 6);
+  
+//           const cards = selected.map((gif, index) => ({
+//             id: index + 1,
+//             name: gif.title || `Gif ${index + 1}`,
+//             image: gif.images.original.url,
+//             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+//           }));
+//             res.json(cards);
+//         }
+//       })
+//       .catch(error => {
+//         console.error('Error fetching data:', error);
+//         res.status(500).send('Internal Server Error');
+//       });
+//     // שורה זו לא צריכה להיות פה
+//     // res.sendFile(path.join(__dirname, 'data', 'cards.json'));
+// });
   
 app.listen(PORT, () => {
     console.log(`Server listen to http://localhost:${PORT}`);
