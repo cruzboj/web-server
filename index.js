@@ -45,7 +45,7 @@ const packsData = [
     id: 3,
     header: 'image/Pack3-Header.png',
     body: 'image/Pack3-Body.png',
-    query: '&q=one-piece'
+    query: '&q=one-piece-anime'
   },
   {
     id: 4,
@@ -90,35 +90,7 @@ app.get('/cards', (req, res) => {
             res.status(500).send('Internal Server Error');
         });
 });
-// app.get('/cards', (req, res) => {
-//     const Rnum = Math.floor(Math.random() * 100);
-//     const url = api + apikey + query + limit;
-    
-//     fetch(url).then(response => response.json())
-//       .then(data => {
-//         if(!data.data || data.data.length === 0) {
-//           res.status(404).send('No data found');
-//           return;
-//         } else {
-//           const shuffled = data.data.sort(() => 0.5 - Math.random());
-//           const selected = shuffled.slice(0, 6);
-  
-//           const cards = selected.map((gif, index) => ({
-//             id: index + 1,
-//             name: gif.title || `Gif ${index + 1}`,
-//             image: gif.images.original.url,
-//             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-//           }));
-//             res.json(cards);
-//         }
-//       })
-//       .catch(error => {
-//         console.error('Error fetching data:', error);
-//         res.status(500).send('Internal Server Error');
-//       });
-//     // שורה זו לא צריכה להיות פה
-//     // res.sendFile(path.join(__dirname, 'data', 'cards.json'));
-// });
+
   
 app.listen(PORT, () => {
     console.log(`Server listen to http://localhost:${PORT}`);
