@@ -4,8 +4,16 @@ const express = require("express");
 const app = express();
 const fs = require("fs");
 const path = require("path");
+const { Pool } = require("pg");
 
 console.log(fs.existsSync(__dirname + "/image/Pack1-Header.png"));
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false, // required for Neon SSL
+  },
+});
 
 const PORT = process.env.PORT || 8080;
 app.use(cors());
@@ -110,4 +118,14 @@ app.get("/cards", (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server listen to http://localhost:${PORT}`);
+});
+
+app.get("/db", (req, res) => {
+  try {
+    pool.query("select * from packtest;").then((response) => {
+      res.status(200).send(response.rows);
+    });
+  } catch (error) {
+    res.status(500).send("DB Error");
+  }
 });
