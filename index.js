@@ -127,6 +127,6 @@ app.get("/db", (req, res) => {
       res.status(200).send(response.rows);
     })
     .catch((error) => {
-      res.status(500).send("DB Error");
+      res.status(500).send("DB Error",error);
     });
 });
