@@ -129,3 +129,28 @@ app.get("/db", (req, res) => {
     res.status(500).send("DB Error");
   }
 });
+
+app.post("/db", async (req, res) => {
+  const { title, image, description } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ error: "Missing required field: title" });
+  }
+
+  try {
+    const query = `
+      INSERT INTO packtest (title, image, description)
+      VALUES ($1, $2, $3)
+      RETURNING *;
+    `;
+
+    const values = [title, image, description];
+
+    const result = await pool.query(query, values);
+
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("DB Insert Error:", error);
+    res.status(500).json({ error: "Database insertion failed" });
+  }
+});
