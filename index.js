@@ -121,13 +121,14 @@ app.listen(PORT, () => {
 });
 
 app.get("/db", (req, res) => {
-  try {
-    pool.query("select * from packtest;").then((response) => {
+  pool
+    .query("select * from packtest;")
+    .then((response) => {
       res.status(200).send(response.rows);
+    })
+    .catch((error) => {
+      res.status(500).send("DB Error " + error);
     });
-  } catch (error) {
-    res.status(500).send("DB Error");
-  }
 });
 
 app.post("/db", async (req, res) => {
