@@ -16,7 +16,9 @@ const pool = new Pool({
 });
 
 const PORT = process.env.PORT || 8080;
+
 app.use(cors());
+app.use(express.json()); 
 
 let api = process.env.API_URL;
 let apikey = `&api_key=${process.env.API_KEY}`;
@@ -121,8 +123,7 @@ app.listen(PORT, () => {
 });
 
 app.get("/db", (req, res) => {
-  pool
-    .query("select * from packtest;")
+  pool.query("select * from packtest;")
     .then((response) => {
       res.status(200).send(response.rows);
     })
@@ -131,27 +132,25 @@ app.get("/db", (req, res) => {
     });
 });
 
-app.post("/db", async (req, res) => {
-  const { title, image, description } = req.body;
+app.post("/db", (req, res) => {
+  const { username, password, email } = req.body;
 
-  if (!title) {
-    return res.status(400).json({ error: "Missing required field: title" });
+  if (!username || !password || !email) {
+    return res.status(400).json({ error: "Missing fields" });
   }
 
-  try {
-    const query = `
-      INSERT INTO packtest (title, image, description)
-      VALUES ($1, $2, $3)
-      RETURNING *;
-    `;
+  const insertQuery = `
+    INSERT INTO users (username, password, email)
+    VALUES ($1, $2, $3)
+    RETURNING *;
+  `;
 
-    const values = [title, image, description];
-
-    const result = await pool.query(query, values);
-
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
-    console.error("DB Insert Error:", error);
-    res.status(500).json({ error: "Database insertion failed" });
-  }
+  pool.query(insertQuery, [username, password, email])
+    .then((response) => {
+      res.status(201).json(response.rows[0]);
+    })
+    .catch((err) => {
+      console.error("Insert error:", err);
+      res.status(500).json({ error: "Insert failed", details: err });
+    });
 });
