@@ -157,18 +157,24 @@ app.post("/db", (req, res) => {
 
 
 app.get("/login", (req,res) => {
-    const {username,password} = req.body;
+    const {username,password} = req.query;
     if (!username || !password){
       return res.status(400).json({error:"Missing fields"});
     }
     const searchQuery = `
-    SELECT username,password from users where username = ${username} and password = ${password}`
+    SELECT username,password from users where username = $1 and password = $2`
 
-    const res = pool.query(searchQuery);
-    if (res[0] == username && res[1] == password){
-      res.status(200).send(`Login Successful`);
-    }
-    else{
-      res.status(200).send(`Invalid Login`);
-    }
+    pool.query(searchQuery, [username,password])
+    .then((result) => {
+      if(result.rows.length > 0){
+        res.status(200).send("Login Successful");
+      }
+      else{
+        res.status(401).send("Invalid Login");
+      }
+    })
+    .catch((err) => {
+      console.error("DB Error",err);
+      res.status(500).json({error:"Internal Server Error"});
+    })
 })
