@@ -154,3 +154,21 @@ app.post("/db", (req, res) => {
       res.status(500).json({ error: "Insert failed", details: err });
     });
 });
+
+
+app.get("/login", (req,res) => {
+    const {username,password} = req.body;
+    if (!username || !password){
+      return res.status(400).json({error:"Missing fields"});
+    }
+    const searchQuery = `
+    SELECT username,password from users where username = ${username} and password = ${password}`
+
+    const res = pool.query(searchQuery);
+    if (res[0] == username && res[1] == password){
+      res.status(200).send(`Login Successful`);
+    }
+    else{
+      res.status(200).send(`Invalid Login`);
+    }
+})
