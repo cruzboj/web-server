@@ -156,10 +156,10 @@ app.post("/db", (req, res) => {
 });
 
 
-app.get("/login", (req,res) => {
-    const {username,password} = req.query;
+app.post("/login", (req,res) => {
+    const {username,password} = req.body;
     if (!username || !password){
-      return res.status(400).json({error:"Missing fields"});
+      return res.status(400).json({error:"Missing fields",fields:`username: ${username} password: ${password}`});
     }
     const searchQuery = `
     SELECT username,password from users where username = $1 and password = $2`
