@@ -162,11 +162,15 @@ app.post("/login", (req,res) => {
       return res.status(400).json({error:"Missing fields",fields:`username: ${username} password: ${password}`});
     }
     const searchQuery = `
-    SELECT username,password from users where username = $1 and password = $2`
+    SELECT username, password from users where username = $1`
 
-    pool.query(searchQuery, [username,password])
+    pool.query(searchQuery, [username])
     .then((result) => {
-      if(result.rows.length > 0){
+      if(result.rows.length === 0){
+        res.status(401).send("Invalid Login");
+      }
+      const user = result.rows[0];
+      if (user.password === password){
         res.status(200).send("Login Successful");
       }
       else{
