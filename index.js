@@ -5,6 +5,7 @@ const app = express();
 const fs = require("fs");
 const path = require("path");
 const { Pool } = require("pg");
+const multer = require("multer");
 
 console.log(fs.existsSync(__dirname + "/image/Pack1-Header.png"));
 
@@ -18,7 +19,7 @@ const pool = new Pool({
 const PORT = process.env.PORT || 8080;
 
 app.use(cors());
-app.use(express.json()); 
+app.use(express.json());
 
 let api = process.env.API_URL;
 let apikey = `&api_key=${process.env.API_KEY}`;
@@ -39,21 +40,58 @@ app.get("/test", (req, res) => {
 app.use("/image", express.static(__dirname + "/image"));
 
 app.get("/news", (req, res) => {
-  const filePath = path.join(__dirname, "data", "news.json");
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Error reading file:", err);
-      return res.status(500).send("News not found");
-    }
+  pool.query(`
+    select * from news
+    `).then(response => {
+      res.status(200).json(response.rows);
+    })
+    .catch(err => {console.error(err)
+      res.status(500).send("DB Error");
+    })
+  // const filePath = path.join(__dirname, "data", "news.json");
+  // fs.readFile(filePath, "utf8", (err, data) => {
+  //   if (err) {
+  //     console.error("Error reading file:", err);
+  //     return res.status(500).send("News not found");
+  //   }
 
-    try {
-      const news = JSON.parse(data);
-      res.status(200).json(news);
-    } catch (parseError) {
-      console.error("Invalid JSON:", parseError);
-      res.status(500).send("Invalid JSON format");
-    }
-  });
+  //   try {
+  //     const news = JSON.parse(data);
+  //     res.status(200).json(news);
+  //   } catch (parseError) {
+  //     console.error("Invalid JSON:", parseError);
+  //     res.status(500).send("Invalid JSON format");
+  //   }
+  // });
+});
+
+const newsStorage = multer.diskStorage({
+  destination: "./image/news",
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + "-" + file.originalname;
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({ storage: newsStorage });
+
+app.post("/news", upload.single("image"), (req, res) => {
+  const { title, description, color} = req.body;
+  const imgPath = "/image/news/" + req.file.filename;
+
+  pool
+    .query(
+      `
+    INSERT INTO news (title,description,img_path,color) values ($1,$2,$3,$4)`,
+      [title, description, imgPath, color]
+    )
+    .then(() => {
+      res.status(200).send("News added!");
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error Inserting");
+    });
 });
 
 const packsData = [
@@ -123,7 +161,8 @@ app.listen(PORT, () => {
 });
 
 app.get("/db", (req, res) => {
-  pool.query("select * from packtest;")
+  pool
+    .query("select * from packtest;")
     .then((response) => {
       res.status(200).send(response.rows);
     })
@@ -145,7 +184,8 @@ app.post("/db", (req, res) => {
     RETURNING *;
   `;
 
-  pool.query(insertQuery, [username, password, email])
+  pool
+    .query(insertQuery, [username, password, email])
     .then((response) => {
       res.status(201).json(response.rows[0]);
     })
@@ -155,30 +195,34 @@ app.post("/db", (req, res) => {
     });
 });
 
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({
+        error: "Missing fields",
+        fields: `username: ${username} password: ${password}`,
+      });
+  }
+  const searchQuery = `
+    SELECT username, password from users where username = $1`;
 
-app.post("/login", (req,res) => {
-    const {username,password} = req.body;
-    if (!username || !password){
-      return res.status(400).json({error:"Missing fields",fields:`username: ${username} password: ${password}`});
-    }
-    const searchQuery = `
-    SELECT username, password from users where username = $1`
-
-    pool.query(searchQuery, [username])
+  pool
+    .query(searchQuery, [username])
     .then((result) => {
-      if(result.rows.length === 0){
+      if (result.rows.length === 0) {
         res.status(401).send("Invalid Login");
       }
       const user = result.rows[0];
-      if (user.password === password){
+      if (user.password === password) {
         res.status(200).send("Login Successful");
-      }
-      else{
+      } else {
         res.status(401).send("Invalid Login");
       }
     })
     .catch((err) => {
-      console.error("DB Error",err);
-      res.status(500).json({error:"Internal Server Error"});
-    })
-})
+      console.error("DB Error", err);
+      res.status(500).json({ error: "Internal Server Error" });
+    });
+});
