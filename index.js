@@ -4,17 +4,18 @@ const express = require("express");
 const app = express();
 const fs = require("fs");
 const path = require("path");
-const { Pool } = require("pg");
-const multer = require("multer");
-
+// const { Pool } = require("pg");
+// const multer = require("multer");
+const routerPath = require("./routes/router");
 console.log(fs.existsSync(__dirname + "/image/Pack1-Header.png"));
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false, // required for Neon SSL
-  },
-});
+
+// const pool = new Pool({
+//   connectionString: process.env.DATABASE_URL,
+//   ssl: {
+//     rejectUnauthorized: false, // required for Neon SSL
+//   },
+// });
 
 const PORT = process.env.PORT || 8080;
 
@@ -29,70 +30,73 @@ let limit = "&limit=100";
 
 const Rnum = Math.floor(Math.random() * 100);
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+// app.use("/image", express.static(__dirname + "/image"));
 
-app.get("/test", (req, res) => {
-  res.json({ message: "Test!" });
-});
+// const newsStorage = multer.diskStorage({
+//   destination: "./image/news",
+//   filename: (req, file, cb) => {
+//     const uniqueName = Date.now() + "-" + file.originalname;
+//     cb(null, uniqueName);
+//   },
+// });
 
-app.use("/image", express.static(__dirname + "/image"));
+// const upload = multer({ storage: newsStorage });
+// app.get("/", (req, res) => {
+//   res.send("Hello World!");
+// });
 
-app.get("/news", (req, res) => {
-  pool.query(`
-    select * from news
-    `).then(response => {
-      res.status(200).json(response.rows);
-    })
-    .catch(err => {console.error(err)
-      res.status(500).send("DB Error");
-    })
-  // const filePath = path.join(__dirname, "data", "news.json");
-  // fs.readFile(filePath, "utf8", (err, data) => {
-  //   if (err) {
-  //     console.error("Error reading file:", err);
-  //     return res.status(500).send("News not found");
-  //   }
+// app.get("/test", (req, res) => {
+//   res.json({ message: "Test!" });
+// });
 
-  //   try {
-  //     const news = JSON.parse(data);
-  //     res.status(200).json(news);
-  //   } catch (parseError) {
-  //     console.error("Invalid JSON:", parseError);
-  //     res.status(500).send("Invalid JSON format");
-  //   }
-  // });
-});
 
-const newsStorage = multer.diskStorage({
-  destination: "./image/news",
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + "-" + file.originalname;
-    cb(null, uniqueName);
-  },
-});
+app.use("/api", routerPath);
+// app.get("/news", (req, res) => {
+//   pool.query(`
+//     select * from news
+//     `).then(response => {
+//       res.status(200).json(response.rows);
+//     })
+//     .catch(err => {console.error(err)
+//       res.status(500).send("DB Error");
+//     })
+// const filePath = path.join(__dirname, "data", "news.json");
+// fs.readFile(filePath, "utf8", (err, data) => {
+//   if (err) {
+//     console.error("Error reading file:", err);
+//     return res.status(500).send("News not found");
+//   }
 
-const upload = multer({ storage: newsStorage });
+//   try {
+//     const news = JSON.parse(data);
+//     res.status(200).json(news);
+//   } catch (parseError) {
+//     console.error("Invalid JSON:", parseError);
+//     res.status(500).send("Invalid JSON format");
+//   }
+// });
+// });
 
-app.post("/news", upload.single("image"), (req, res) => {
-  const { title, description, color} = req.body;
-  const imgPath = "/image/news/" + req.file.filename;
 
-  pool
-    .query(
-      `
-    INSERT INTO news (title,description,img_path,color) values ($1,$2,$3,$4)`,
-      [title, description, imgPath, color]
-    )
-    .then(() => {
-      res.status(200).send("News added!");
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error Inserting");
-    });
-});
+
+// app.post("/news", upload.single("image"), (req, res) => {
+//   const { title, description, color } = req.body;
+//   const imgPath = "/image/news/" + req.file.filename;
+
+//   pool
+//     .query(
+//       `
+//     INSERT INTO news (title,description,img_path,color) values ($1,$2,$3,$4)`,
+//       [title, description, imgPath, color]
+//     )
+//     .then(() => {
+//       res.status(200).send("News added!");
+//     })
+//     .catch((err) => {
+//       console.error(err);
+//       res.status(500).send("Error Inserting");
+//     });
+// });
 
 const packsData = [
   {
@@ -160,40 +164,40 @@ app.listen(PORT, () => {
   console.log(`Server listen to http://localhost:${PORT}`);
 });
 
-app.get("/db", (req, res) => {
-  pool
-    .query("select * from packtest;")
-    .then((response) => {
-      res.status(200).send(response.rows);
-    })
-    .catch((error) => {
-      res.status(500).send("DB Error " + error);
-    });
-});
+// app.get("/db", (req, res) => {
+//   pool
+//     .query("select * from packtest;")
+//     .then((response) => {
+//       res.status(200).send(response.rows);
+//     })
+//     .catch((error) => {
+//       res.status(500).send("DB Error " + error);
+//     });
+// });
 
-app.post("/db", (req, res) => {
-  const { username, password, email } = req.body;
+// app.post("/db", (req, res) => {
+//   const { username, password, email } = req.body;
 
-  if (!username || !password || !email) {
-    return res.status(400).json({ error: "Missing fields" });
-  }
+//   if (!username || !password || !email) {
+//     return res.status(400).json({ error: "Missing fields" });
+//   }
 
-  const insertQuery = `
-    INSERT INTO users (username, password, email)
-    VALUES ($1, $2, $3)
-    RETURNING *;
-  `;
+//   const insertQuery = `
+//     INSERT INTO users (username, password, email)
+//     VALUES ($1, $2, $3)
+//     RETURNING *;
+//   `;
 
-  pool
-    .query(insertQuery, [username, password, email])
-    .then((response) => {
-      res.status(201).json(response.rows[0]);
-    })
-    .catch((err) => {
-      console.error("Insert error:", err);
-      res.status(500).json({ error: "Insert failed", details: err });
-    });
-});
+//   pool
+//     .query(insertQuery, [username, password, email])
+//     .then((response) => {
+//       res.status(201).json(response.rows[0]);
+//     })
+//     .catch((err) => {
+//       console.error("Insert error:", err);
+//       res.status(500).json({ error: "Insert failed", details: err });
+//     });
+// });
 
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
@@ -230,7 +234,7 @@ app.post("/login", (req, res) => {
 app.post("/admin/db", (req, res) => {
   const selectQuery = `SELECT * FROM users ORDER BY id`;
 
-   pool
+  pool
     .query(selectQuery)
     .then((result) => {
       res.status(200).json(result.rows);
