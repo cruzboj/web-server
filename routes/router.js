@@ -27,6 +27,7 @@ router.get("/packs",packController.getPacks);
 router.get("/cards",packController.getCards);
 
 router.get("/adminTickets", adminController.getTickets);
-router.patch("/adminTickets",adminController.changeTicketStatus)
+router.patch("/adminTickets",adminController.changeTicketStatus);
+router.post("/adminTickets",adminController.postTicket);
 
 module.exports = router;
