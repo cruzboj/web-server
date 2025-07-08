@@ -115,6 +115,7 @@ function createPack(req, res) {
     })
     .catch((error) => {
       console.log(`error creating card:`, error);
+      res.status(503).send("ERROR: ", error);
     });
 }
 
