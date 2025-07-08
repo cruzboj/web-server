@@ -22,6 +22,7 @@ router.post("/news", upload.single("image"), newsController.postNews);
 router.get("/db", dbController.getDB);
 router.post("/db", dbController.postDB);
 router.post("/login", dbController.postLogin);
+router.post("/admin/db", dbController.getAllUsers);
 
 router.get("/packs",packController.getPacks);
 router.get("/cards",packController.getCards);

@@ -66,8 +66,21 @@ function postLogin(req, res) {
     });
 }
 
+function getAllUsers(req,res){
+  query = `select * from users`;
+
+  pool.query(query)
+  .then((response) => {
+     if (response.rows.length === 0){
+      res.status(503).send("No matches");
+     }
+     res.status(200).send(response.rows);
+  })
+}
+
 module.exports = {
   getDB,
   postDB,
-  postLogin
+  postLogin,
+  getAllUsers
 };
