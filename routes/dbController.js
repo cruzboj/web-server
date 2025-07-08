@@ -92,7 +92,7 @@ function getAllPacks(req, res) {
 
 function getCardsFromPack(req,res){
   query = "select * from cards  where packid = $1 order by id asc";
-  packid = req.body.packid;
+  packid = req.params.packid;
   console.log(packid);
   pool.query(query,[packid])
   .then((response) => {
