@@ -111,11 +111,11 @@ function createPack(req, res) {
   pool
     .query(query, [packname, cost])
     .then((response) => {
-      res.status(201).send("Pack Created");
+      res.status(201).send({response:"Pack Created"});
     })
     .catch((error) => {
       console.log(`error creating card:`, error);
-      res.status(503).send("ERROR: " + error);
+      res.status(503).send({error:"ERROR: " + error});
     });
 }
 
