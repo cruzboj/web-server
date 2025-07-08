@@ -45,7 +45,7 @@ function postLogin(req, res) {
     });
   }
   const searchQuery = `
-    SELECT username, password from users where username = $1`;
+    SELECT username, password, isadmin from users where username = $1`;
 
   pool
     .query(searchQuery, [username])
@@ -55,7 +55,7 @@ function postLogin(req, res) {
       }
       const user = result.rows[0];
       if (user.password === password) {
-        res.status(200).send("Login Successful");
+        res.status(200).send({message:"Login Successful",isAdmin:user.isadmin});
       } else {
         res.status(401).send("Invalid Login");
       }
@@ -66,8 +66,21 @@ function postLogin(req, res) {
     });
 }
 
+function getAllUsers(req,res){
+  query = `select * from users`;
+
+  pool.query(query)
+  .then((response) => {
+     if (response.rows.length === 0){
+      res.status(503).send("No matches");
+     }
+     res.status(200).send(response.rows);
+  })
+}
+
 module.exports = {
   getDB,
   postDB,
-  postLogin
+  postLogin,
+  getAllUsers
 };

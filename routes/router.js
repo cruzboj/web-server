@@ -4,6 +4,7 @@ const generalController = require("./generalController");
 const dbController = require("./dbController.js");
 const newsController = require("./newsController");
 const packController = require("./packController.js");
+const adminController = require("./adminController.js");
 const upload = require("../multer");
 
 // const db = require('../controllers/dbController');
@@ -21,8 +22,13 @@ router.post("/news", upload.single("image"), newsController.postNews);
 router.get("/db", dbController.getDB);
 router.post("/db", dbController.postDB);
 router.post("/login", dbController.postLogin);
+router.post("/admin/db", dbController.getAllUsers);
 
 router.get("/packs",packController.getPacks);
 router.get("/cards",packController.getCards);
+
+router.get("/adminTickets", adminController.getTickets);
+router.patch("/adminTickets",adminController.changeTicketStatus);
+router.post("/adminTickets",adminController.postTicket);
 
 module.exports = router;
