@@ -90,34 +90,51 @@ function getAllPacks(req, res) {
   });
 }
 
-function getCardsFromPack(req,res){
+function getCardsFromPack(req, res) {
   query = "select * from cards  where packid = $1 order by id asc";
   packid = req.params.packid;
   console.log(packid);
-  pool.query(query,[packid])
-  .then((response) => {
-    if (response.rows.length === 0){
+  pool.query(query, [packid]).then((response) => {
+    if (response.rows.length === 0) {
       return res.status(401).send(`No cards for ${packid}`);
     }
     return res.status(200).send(response.rows);
-  })
+  });
 }
 
-function createCard(req,res){
-  query = "insert into cards (name,image_url,color_id,packid) values ($1,$2,$3,$4)";
+function createPack(req, res) {
+  query = "insert into packs (name,cost) values ($1,$2)";
+
+  const packname = req.body.name;
+  const cost = req.body.cost;
+
+  pool
+    .query(query, [packname, cost])
+    .then((response) => {
+      res.status(201).send("Pack Created");
+    })
+    .catch((error) => {
+      console.log(`error creating card:`, error);
+    });
+}
+
+function createCard(req, res) {
+  query =
+    "insert into cards (name,image_url,color_id,packid) values ($1,$2,$3,$4)";
 
   const name = req.body.name;
   const image_url = req.body.image_url;
   const color_id = req.body.color_id;
   const packid = req.body.packid;
 
-  pool.query(query,[name,image_url,color_id,packid])
-  .then((response) => {
-    res.status(201).send("Card Created");
-  })
-  .catch((error) => {
-    console.log(`error creating card:`, error);
-  })
+  pool
+    .query(query, [name, image_url, color_id, packid])
+    .then((response) => {
+      res.status(201).send("Card Created");
+    })
+    .catch((error) => {
+      console.log(`error creating card:`, error);
+    });
 }
 
 module.exports = {
@@ -127,5 +144,6 @@ module.exports = {
   getAllUsers,
   getAllPacks,
   getCardsFromPack,
+  createPack,
   createCard
 };
