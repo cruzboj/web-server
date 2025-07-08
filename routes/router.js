@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const api = require("./api");
+const generalController = require("./generalController");
+const dbController = require("./dbController.js");
+const newsController = require("./newsController");
+const packController = require("./packController.js");
 const upload = require("../multer");
 
 // const db = require('../controllers/dbController');
@@ -8,13 +11,17 @@ const upload = require("../multer");
 // router.post('/tasks', db.addTask);
 // router.patch('/tasks/:id', db.toggleTask);
 // router.delete('/tasks/:id', db.deleteTask);
+router.get("/", generalController.helloWorld);
+router.get("/test", generalController.test);
 
-router.get("/news", api.getNews);
-router.get("/", api.helloWorld);
-router.get("/test", api.test);
-router.get("/db", api.getDB);
+router.get("/news", newsController.getNews);
+router.post("/news", upload.single("image"), newsController.postNews);
 
-router.post("/db", api.postDB);
-router.post("/news", upload.single("image"), api.postNews);
+
+router.get("/db", dbController.getDB);
+router.post("/db", dbController.postDB);
+
+router.get("/packs",packController.getPacks);
+router.get("/cards",packController.getCards);
 
 module.exports = router;

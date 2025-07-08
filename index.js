@@ -4,18 +4,11 @@ const express = require("express");
 const app = express();
 const fs = require("fs");
 const path = require("path");
-// const { Pool } = require("pg");
-// const multer = require("multer");
 const routerPath = require("./routes/router");
 console.log(fs.existsSync(__dirname + "/image/Pack1-Header.png"));
 
 
-// const pool = new Pool({
-//   connectionString: process.env.DATABASE_URL,
-//   ssl: {
-//     rejectUnauthorized: false, // required for Neon SSL
-//   },
-// });
+
 
 const PORT = process.env.PORT || 8080;
 
@@ -30,106 +23,44 @@ let limit = "&limit=100";
 
 const Rnum = Math.floor(Math.random() * 100);
 
-// app.use("/image", express.static(__dirname + "/image"));
-
-// const newsStorage = multer.diskStorage({
-//   destination: "./image/news",
-//   filename: (req, file, cb) => {
-//     const uniqueName = Date.now() + "-" + file.originalname;
-//     cb(null, uniqueName);
-//   },
-// });
-
-// const upload = multer({ storage: newsStorage });
-// app.get("/", (req, res) => {
-//   res.send("Hello World!");
-// });
-
-// app.get("/test", (req, res) => {
-//   res.json({ message: "Test!" });
-// });
 
 
 app.use("/api", routerPath);
-// app.get("/news", (req, res) => {
-//   pool.query(`
-//     select * from news
-//     `).then(response => {
-//       res.status(200).json(response.rows);
-//     })
-//     .catch(err => {console.error(err)
-//       res.status(500).send("DB Error");
-//     })
-// const filePath = path.join(__dirname, "data", "news.json");
-// fs.readFile(filePath, "utf8", (err, data) => {
-//   if (err) {
-//     console.error("Error reading file:", err);
-//     return res.status(500).send("News not found");
-//   }
 
-//   try {
-//     const news = JSON.parse(data);
-//     res.status(200).json(news);
-//   } catch (parseError) {
-//     console.error("Invalid JSON:", parseError);
-//     res.status(500).send("Invalid JSON format");
-//   }
+
+// const packsData = [
+//   {
+//     id: 1,
+//     header: "image/Pack1-Header.png",
+//     body: "image/Pack1-Body.png",
+//     query: "&q=brainrot",
+//   },
+//   {
+//     id: 2,
+//     header: "image/Pack2-Header.png",
+//     body: "image/Pack2-Body.png",
+//     query: "&q=Pokemon",
+//   },
+//   {
+//     id: 3,
+//     header: "image/Pack3-Header.png",
+//     body: "image/Pack3-Body.png",
+//     query: "&q=one-piece-anime",
+//   },
+//   {
+//     id: 4,
+//     header: "image/Pack4-Header.png",
+//     body: "image/Pack4-Body.png",
+//     query: "&q=DragonBall",
+//   },
+// ];
+
+// app.get("/packs", (req, res) => {
+//   res.json(packsData);
 // });
-// });
-
-
-
-// app.post("/news", upload.single("image"), (req, res) => {
-//   const { title, description, color } = req.body;
-//   const imgPath = "/image/news/" + req.file.filename;
-
-//   pool
-//     .query(
-//       `
-//     INSERT INTO news (title,description,img_path,color) values ($1,$2,$3,$4)`,
-//       [title, description, imgPath, color]
-//     )
-//     .then(() => {
-//       res.status(200).send("News added!");
-//     })
-//     .catch((err) => {
-//       console.error(err);
-//       res.status(500).send("Error Inserting");
-//     });
-// });
-
-const packsData = [
-  {
-    id: 1,
-    header: "image/Pack1-Header.png",
-    body: "image/Pack1-Body.png",
-    query: "&q=brainrot",
-  },
-  {
-    id: 2,
-    header: "image/Pack2-Header.png",
-    body: "image/Pack2-Body.png",
-    query: "&q=Pokemon",
-  },
-  {
-    id: 3,
-    header: "image/Pack3-Header.png",
-    body: "image/Pack3-Body.png",
-    query: "&q=one-piece-anime",
-  },
-  {
-    id: 4,
-    header: "image/Pack4-Header.png",
-    body: "image/Pack4-Body.png",
-    query: "&q=DragonBall",
-  },
-];
-
-app.get("/packs", (req, res) => {
-  res.json(packsData);
-});
 
 app.get("/cards", (req, res) => {
+  console.log("index");
   const cardsData = req.query.q;
   if (!cardsData) {
     return res.status(400).send("Missing query");
