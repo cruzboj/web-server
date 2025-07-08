@@ -3,7 +3,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-const uploadPath = path.join(__dirname, "image/news");
+const uploadPath = path.join(__dirname, "image/profilepic");
 
 // Make sure upload folder exists
 if (!fs.existsSync(uploadPath)) {
@@ -23,4 +23,4 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-module.exports = upload; // ✅ EXPORTS the actual upload middleware
+module.exports = upload; 

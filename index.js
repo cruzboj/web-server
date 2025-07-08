@@ -27,16 +27,16 @@ app.listen(PORT, () => {
 
 
 
-app.post("/admin/db", (req, res) => {
-  const selectQuery = `SELECT * FROM users ORDER BY id`;
+// app.post("/admin/db", (req, res) => {
+//   const selectQuery = `SELECT * FROM users ORDER BY id`;
 
-  pool
-    .query(selectQuery)
-    .then((result) => {
-      res.status(200).json(result.rows);
-    })
-    .catch((error) => {
-      console.error("Error retrieving users:", error);
-      res.status(500).json({ error: "Database error" });
-    });
-});
+//   pool
+//     .query(selectQuery)
+//     .then((result) => {
+//       res.status(200).json(result.rows);
+//     })
+//     .catch((error) => {
+//       console.error("Error retrieving users:", error);
+//       res.status(500).json({ error: "Database error" });
+//     });
+// });

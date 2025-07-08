@@ -67,7 +67,7 @@ function postLogin(req, res) {
 }
 
 function getAllUsers(req,res){
-  query = `select * from users`;
+  query = `select * from users order by id asc`;
 
   pool.query(query)
   .then((response) => {

@@ -5,7 +5,7 @@ const dbController = require("./dbController.js");
 const newsController = require("./newsController");
 const packController = require("./packController.js");
 const adminController = require("./adminController.js");
-const upload = require("../multer");
+const upload = require("../NewsUpload.js");
 
 // const db = require('../controllers/dbController');
 // router.get('/tasks', db.getTasks);
