@@ -29,15 +29,14 @@ function getPacks(req, res) {
   res.json(packsData);
 }
 
-let api = process.env.API_URL;
-let apikey = `&api_key=${process.env.API_KEY}`;
-
 function getCards(req, res) {
+  let api = process.env.API_URL;
+  let apikey = `&api_key=${process.env.API_KEY}`;
   const cardsData = req.query.q;
   if (!cardsData) {
     return res.status(400).send("Missing query");
   }
-  const url = `${api}${apikey}&q=${cardsData}&limit=100`;
+  const url = `${api}?${apikey}&q=${cardsData}&limit=100`;
   fetch(url)
     .then((response) => response.json())
     .then((data) => {
