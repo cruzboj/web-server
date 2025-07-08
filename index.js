@@ -6,7 +6,7 @@ const fs = require("fs");
 const path = require("path");
 const routerPath = require("./routes/router");
 console.log(fs.existsSync(__dirname + "/image/Pack1-Header.png"));
-
+app.use("/image", express.static(__dirname + "/image"));
 
 
 
