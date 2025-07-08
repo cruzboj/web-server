@@ -55,7 +55,9 @@ function postLogin(req, res) {
       }
       const user = result.rows[0];
       if (user.password === password) {
-        res.status(200).send({message:"Login Successful",isAdmin:user.isadmin});
+        res
+          .status(200)
+          .send({ message: "Login Successful", isAdmin: user.isadmin });
       } else {
         res.status(401).send("Invalid Login");
       }
@@ -66,15 +68,38 @@ function postLogin(req, res) {
     });
 }
 
-function getAllUsers(req,res){
+function getAllUsers(req, res) {
   query = `select * from users order by id asc`;
 
-  pool.query(query)
-  .then((response) => {
-     if (response.rows.length === 0){
+  pool.query(query).then((response) => {
+    if (response.rows.length === 0) {
       res.status(503).send("No matches");
-     }
-     res.status(200).send(response.rows);
+    }
+    res.status(200).send(response.rows);
+  });
+}
+
+function getAllPacks(req, res) {
+  query = "select * from packs order by id asc";
+
+  pool.query(query).then((response) => {
+    if (response.rows.length === 0) {
+      res.status(503).send("No matches");
+    }
+    res.status(200).send(response.rows);
+  });
+}
+
+function getCardsFromPack(req,res){
+  query = "select * from cards  where packid = $1 order by id asc";
+  packid = req.body.packid;
+  console.log(packid);
+  pool.query(query,[packid])
+  .then((response) => {
+    if (response.rows.length === 0){
+      return res.status(401).send(`No cards for ${packid}`);
+    }
+    return res.status(200).send(response.rows);
   })
 }
 
@@ -82,5 +107,7 @@ module.exports = {
   getDB,
   postDB,
   postLogin,
-  getAllUsers
+  getAllUsers,
+  getAllPacks,
+  getCardsFromPack
 };

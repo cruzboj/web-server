@@ -23,6 +23,8 @@ router.get("/db", dbController.getDB);
 router.post("/db", dbController.postDB);
 router.post("/login", dbController.postLogin);
 router.post("/admin/db", dbController.getAllUsers);
+router.get("/admin/packs",dbController.getAllPacks);
+router.get("/admin/cards", dbController.getCardsFromPack);
 
 router.get("/packs",packController.getPacks);
 router.get("/cards",packController.getCards);
