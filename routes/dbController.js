@@ -45,7 +45,7 @@ function postLogin(req, res) {
     });
   }
   const searchQuery = `
-    SELECT username, password from users where username = $1`;
+    SELECT username, password, isadmin from users where username = $1`;
 
   pool
     .query(searchQuery, [username])
@@ -54,8 +54,9 @@ function postLogin(req, res) {
         return res.status(401).send("Invalid Login");
       }
       const user = result.rows[0];
+      console.log(user);
       if (user.password === password) {
-        res.status(200).send("Login Successful");
+        res.status(200).send({message:"Login Successful",isAdmin:user.isadmin});
       } else {
         res.status(401).send("Invalid Login");
       }
