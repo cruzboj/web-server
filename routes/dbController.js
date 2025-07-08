@@ -103,11 +103,29 @@ function getCardsFromPack(req,res){
   })
 }
 
+function createCard(req,res){
+  query = "insert into cards (name,image_url,color_id,packid) values ($1,$2,$3,$4)";
+
+  const name = req.body.name;
+  const image_url = req.body.image_url;
+  const color_id = req.body.color_id;
+  const packid = req.body.packid;
+
+  pool.query(query,[name,image_url,color_id,packid])
+  .then((response) => {
+    res.status(201).send("Card Created");
+  })
+  .catch((error) => {
+    console.log(`error creating card:`, error);
+  })
+}
+
 module.exports = {
   getDB,
   postDB,
   postLogin,
   getAllUsers,
   getAllPacks,
-  getCardsFromPack
+  getCardsFromPack,
+  createCard
 };

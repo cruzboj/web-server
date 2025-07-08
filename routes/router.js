@@ -25,6 +25,7 @@ router.post("/login", dbController.postLogin);
 router.post("/admin/db", dbController.getAllUsers);
 router.get("/admin/packs",dbController.getAllPacks);
 router.get("/admin/cards/:packid", dbController.getCardsFromPack);
+router.post("/admin/createCard", dbController.createCard);
 
 router.get("/packs",packController.getPacks);
 router.get("/cards",packController.getCards);
