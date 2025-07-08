@@ -80,7 +80,7 @@ function getAllUsers(req, res) {
 }
 
 function getAllPacks(req, res) {
-  query = "select * from packs order by id asc";
+  query = "select * from packs order by packid asc";
 
   pool.query(query).then((response) => {
     if (response.rows.length === 0) {
