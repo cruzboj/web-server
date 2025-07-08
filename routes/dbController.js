@@ -54,7 +54,6 @@ function postLogin(req, res) {
         return res.status(401).send("Invalid Login");
       }
       const user = result.rows[0];
-      console.log(user);
       if (user.password === password) {
         res.status(200).send({message:"Login Successful",isAdmin:user.isadmin});
       } else {

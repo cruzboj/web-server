@@ -4,6 +4,7 @@ const generalController = require("./generalController");
 const dbController = require("./dbController.js");
 const newsController = require("./newsController");
 const packController = require("./packController.js");
+const adminController = require("./adminController.js");
 const upload = require("../multer");
 
 // const db = require('../controllers/dbController');
@@ -24,5 +25,8 @@ router.post("/login", dbController.postLogin);
 
 router.get("/packs",packController.getPacks);
 router.get("/cards",packController.getCards);
+
+router.get("/adminTickets", adminController.getTickets);
+router.patch("/adminTickets",adminController.changeTicketStatus)
 
 module.exports = router;
