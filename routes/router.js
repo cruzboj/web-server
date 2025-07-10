@@ -27,6 +27,8 @@ router.get("/admin/packs",dbController.getAllPacks);
 router.get("/admin/cards/:packid", dbController.getCardsFromPack);
 router.post("/admin/createCard", dbController.createCard);
 router.post("/admin/createPack",dbController.createPack);
+router.delete("/admin/cards/:cardid", dbController.deleteCard);
+router.delete("/admin/packs/:packid",dbController.deletePack);
 
 router.get("/packs",packController.getPacks);
 router.get("/cards",packController.getCards);

@@ -111,11 +111,11 @@ function createPack(req, res) {
   pool
     .query(query, [packname, cost])
     .then((response) => {
-      res.status(201).json({response:"Pack Created"});
+      res.status(201).json({ response: "Pack Created" });
     })
     .catch((error) => {
       console.log(`error creating card:`, error);
-      res.status(503).json({error:"ERROR: " + error});
+      res.status(503).json({ error: "ERROR: " + error });
     });
 }
 
@@ -138,6 +138,46 @@ function createCard(req, res) {
     });
 }
 
+function deleteCard(req, res) {
+  const query = "delete from cards where id = $1";
+  const cardID = req.params.cardid;
+  pool.query("select * from cards where id = $1", [cardID]).then((response) => {
+    console.log(response.rows);
+    if (response.rows.length === 0) {
+      return res.status(404).json({ error: "Card not found" });
+    }
+    pool
+      .query(query, [cardID])
+      .then((response) => {
+        res.status(200).json({ status: "Card deleted" });
+      })
+      .catch((error) => {
+        res.status(500).send({ error: `Internal server error, ${error}` });
+      });
+  });
+}
+
+function deletePack(req, res) {
+  const query = "delete from packs where packid = $1";
+  const packID = req.params.packid;
+  pool
+    .query("select * from packs where packid = $1", [packID])
+    .then((response) => {
+      console.log(response.rows);
+      if (response.rows.length === 0) {
+        return res.status(404).json({ error: "Pack not found" });
+      }
+      pool
+        .query(query, [packID])
+        .then((response) => {
+          res.status(200).json({ status: "Pack deleted" });
+        })
+        .catch((error) => {
+          res.status(500).send({ error: `Internal server error, ${error}` });
+        });
+    });
+}
+
 module.exports = {
   getDB,
   postDB,
@@ -146,5 +186,7 @@ module.exports = {
   getAllPacks,
   getCardsFromPack,
   createPack,
-  createCard
+  createCard,
+  deleteCard,
+  deletePack
 };
