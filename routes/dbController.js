@@ -178,6 +178,22 @@ function deletePack(req, res) {
     });
 }
 
+function searchForUser(req,res){
+  const query = "select * from users where username = $1";
+  const username = req.query.username;
+  pool.query(query,[username])
+  .then((response) => {
+    if (response.rows.length === 0){
+      return res.status(404).json({"error":"user not found"});
+    }
+    return res.status(200).json(response.rows[0].id);
+  })
+  .catch((error) => {
+    console.log(error);
+    return res.status(500).json({"error":"unkown error"});
+  })
+}
+
 module.exports = {
   getDB,
   postDB,
@@ -188,5 +204,6 @@ module.exports = {
   createPack,
   createCard,
   deleteCard,
-  deletePack
+  deletePack,
+  searchForUser
 };
