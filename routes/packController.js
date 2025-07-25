@@ -68,7 +68,7 @@ const pool = require("../pool");
 
 function getAvailablePacks(req, res) {
 
-  const query = "SELECT * FROM packs WHERE show_pack = TRUE;";
+  const query = "SELECT * FROM packs WHERE show_pack = TRUE ORDER BY id;";
 
   pool
     .query(query)
