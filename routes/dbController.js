@@ -1,6 +1,10 @@
 const pool = require("../pool");
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = process.env.JWT_SECRET || "your secret";
+const TOKEN_EXPIRATION = "365d";
 
-function getDB(req, res) {
+
+function getDB(req, res) { //To delete
   pool
     .query("select * from packtest;")
     .then((response) => {
@@ -11,7 +15,7 @@ function getDB(req, res) {
     });
 }
 
-function postDB(req, res) {
+function Register(req, res) { //Register
   console.log(req.body);
   const { username, password, email } = req.body;
 
@@ -36,7 +40,7 @@ function postDB(req, res) {
     });
 }
 
-function postLogin(req, res) {
+function Login(req, res) {
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({
@@ -44,8 +48,9 @@ function postLogin(req, res) {
       fields: `username: ${username} password: ${password}`,
     });
   }
+
   const searchQuery = `
-    SELECT username, password, isadmin from users where username = $1`;
+    SELECT id,username, password, isadmin from users where username = $1`;
 
   pool
     .query(searchQuery, [username])
@@ -55,9 +60,15 @@ function postLogin(req, res) {
       }
       const user = result.rows[0];
       if (user.password === password) {
+        const token = jwt.sign({
+          id: user.id,
+          username: user.username
+        },
+          SECRET_KEY,
+          { expiresIn: TOKEN_EXPIRATION });
         res
           .status(200)
-          .send({ message: "Login Successful", isAdmin: user.isadmin });
+          .send({ message: "Login Successful", isAdmin: user.isadmin, token:token});
       } else {
         res.status(401).send("Invalid Login");
       }
@@ -178,26 +189,26 @@ function deletePack(req, res) {
     });
 }
 
-function searchForUser(req,res){
+function searchForUser(req, res) {
   const query = "select * from users where username = $1";
   const username = req.query.username;
-  pool.query(query,[username])
-  .then((response) => {
-    if (response.rows.length === 0){
-      return res.status(404).json({"error":"user not found"});
-    }
-    return res.status(200).json(response.rows[0].id);
-  })
-  .catch((error) => {
-    console.log(error);
-    return res.status(500).json({"error":"unkown error"});
-  })
+  pool.query(query, [username])
+    .then((response) => {
+      if (response.rows.length === 0) {
+        return res.status(404).json({ "error": "user not found" });
+      }
+      return res.status(200).json(response.rows[0].id);
+    })
+    .catch((error) => {
+      console.log(error);
+      return res.status(500).json({ "error": "unkown error" });
+    })
 }
 
 module.exports = {
   getDB,
-  postDB,
-  postLogin,
+  Register,
+  Login,
   getAllUsers,
   getAllPacks,
   getCardsFromPack,

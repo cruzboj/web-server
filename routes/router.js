@@ -7,6 +7,7 @@ const packController = require("./packController.js");
 const adminController = require("./adminController.js");
 const tradeController = require("./tradeController.js");
 const upload = require("../NewsUpload.js");
+const JWT = require("../JWT.js");
 
 // const db = require('../controllers/dbController');
 // router.get('/tasks', db.getTasks);
@@ -24,12 +25,12 @@ router.post("/news", upload.single("image"), newsController.postNews);
 
 //DB controller
 router.get("/db", dbController.getDB);
-router.post("/db", dbController.postDB);
-router.post("/login", dbController.postLogin);
+router.post("/db", dbController.Register);
+router.post("/login", dbController.Login);
 router.post("/admin/db", dbController.getAllUsers);
 router.get("/admin/packs", dbController.getAllPacks);
 router.get("/admin/cards/:packid", dbController.getCardsFromPack);
-router.post("/admin/createCard", dbController.createCard);
+router.post("/admin/createCard", JWT.authenticateToken,dbController.createCard);
 router.post("/admin/createPack", dbController.createPack);
 router.delete("/admin/cards/:cardid", dbController.deleteCard);
 router.delete("/admin/packs/:packid", dbController.deletePack);
