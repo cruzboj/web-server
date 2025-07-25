@@ -65,10 +65,8 @@
 // }
 const pool = require("../pool");
 
-
 function getAvailablePacks(req, res) {
-
-  const query = "SELECT * FROM packs WHERE show_pack = TRUE ORDER BY id;";
+  const query = "SELECT * FROM packs WHERE show_pack = TRUE ORDER BY id ASC";
 
   pool
     .query(query)
@@ -76,14 +74,10 @@ function getAvailablePacks(req, res) {
       res.status(200).json(response.rows);
     })
     .catch((error) => {
-      console.error(`Error fetching packs:`, error);
+      console.error("Error fetching packs:", error);
       res.status(500).json({ error: "Internal server error" });
     });
-  
 }
-
-
-
 
 module.exports = {
   getAvailablePacks,
