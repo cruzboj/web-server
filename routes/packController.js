@@ -82,6 +82,5 @@ function getAvailablePacks(req, res) {
 
 
 module.exports = {
-  getPacks,
-  getCards,
+  getAvailablePacks,
 };
