@@ -6,13 +6,10 @@ function authenticateToken(req, res, next) {
     const authHeader = req.headers["authorization"];
     const token = authHeader;
     if (!token) {
-        console.log("1");
         return res.status(401).send("Invalid Token");
     }
-    console.log(token); 
     jwt.verify(token, SECRET_KEY, (err, user) => {
         if (err) {
-            console.log("2");
             return res.status(403).send("Invalid Token");
         }
         req.user = user;
@@ -20,6 +17,24 @@ function authenticateToken(req, res, next) {
     });
 }
 
+function authenticateAdmin(req,res,next){
+    const authHeader = req.headers["authorization"];
+    if (!authHeader){
+        return res.status(401).send("No Token");
+    }
+    jwt.verify(authHeader,SECRET_KEY,(err,decoded) => {
+        if (err){
+            return res.status(403);
+        }
+        if(!decoded.isAdmin){
+            return res.status(403).json({"error":"User is not an admin"});
+        }
+        req.user = decoded;
+        next();
+    })
+}
+
 module.exports = {
-    authenticateToken
+    authenticateToken,
+    authenticateAdmin
 }

@@ -62,7 +62,8 @@ function Login(req, res) {
       if (user.password === password) {
         const token = jwt.sign({
           id: user.id,
-          username: user.username
+          username: user.username,
+          isAdmin:user.isadmin
         },
           SECRET_KEY,
           { expiresIn: TOKEN_EXPIRATION });
@@ -77,6 +78,18 @@ function Login(req, res) {
       console.error("DB Error", err);
       res.status(500).json({ error: "Internal Server Error" });
     });
+}
+
+function getUserInfo(req,res){
+  const userID = req.user.id;
+  const query = "select username,isadmin,coins from users where id = $1";
+  pool.query(query,[userID])
+  .then((response) => {
+    if(response.rows.length === 0){
+      return res.status(404).send("User Not found");
+    }
+    return res.status(200).send(response.rows[0]);
+  })
 }
 
 function getAllUsers(req, res) {
@@ -216,5 +229,6 @@ module.exports = {
   createCard,
   deleteCard,
   deletePack,
-  searchForUser
+  searchForUser,
+  getUserInfo
 };

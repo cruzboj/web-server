@@ -14,7 +14,9 @@ function getNews(req, res) {
 function postNews(req, res) {
     const { title, description, color } = req.body;
     const imgPath = "/image/news/" + req.file.filename;
-
+    if (!title || !color || !description ||!imgPath){
+        return res.status(401).json({"error":"Missing parameters"});
+    }
     pool
         .query(
             `
