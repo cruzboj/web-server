@@ -63,8 +63,11 @@
 //       res.status(500).send("Internal Server Error");
 //     });
 // }
+const pool = require("../pool");
+
 
 function getAvailablePacks(req, res) {
+
   const query = "SELECT * FROM packs WHERE show_pack = TRUE;";
 
   pool
@@ -76,6 +79,7 @@ function getAvailablePacks(req, res) {
       console.error(`Error fetching packs:`, error);
       res.status(500).json({ error: "Internal server error" });
     });
+  
 }
 
 
