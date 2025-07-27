@@ -79,6 +79,20 @@ function getAvailablePacks(req, res) {
     });
 }
 
+function getPackcards(req, res) {
+  const query = `SELECT * FROM cards WHERE packid = ${packid}`;
+  pool
+    .query(query)
+    .then((response) => {
+      res.status(200).json(response.rows);
+    })
+    .catch((error) => {
+      console.error("Error fetching cards:", error);
+      res.status(500).json({ error: "Internal server error" });
+    });
+}
+
 module.exports = {
   getAvailablePacks,
+  getPackcards,
 };
