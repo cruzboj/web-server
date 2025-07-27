@@ -45,6 +45,8 @@ router.get("/user",JWT.authenticateToken,dbController.getUserInfo);
 //Pack Controller
 router.get("/packs", packController.getPacks);
 router.get("/cards", packController.getCards);
+router.get("/packs2",packController.getPacks2);
+router.get("/packs2/getPack", JWT.authenticateToken,packController.getCardFromPack);
 
 //Admin Controller
 router.get("/adminTickets", JWT.authenticateAdmin, adminController.getTickets);
