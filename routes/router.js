@@ -43,10 +43,10 @@ router.get("/users/search", dbController.searchForUser);
 router.get("/user",JWT.authenticateToken,dbController.getUserInfo);
 
 //Pack Controller
-router.get("/packs", packController.getPacks);
-router.get("/cards", packController.getCards);
-router.get("/packs2",packController.getPacks2);
-router.get("/packs2/getPack", JWT.authenticateToken,packController.getCardFromPack);
+// router.get("/packs", packController.getPacks);
+// router.get("/cards", packController.getCards);
+router.get("/user/packs",packController.getAvailablePacks);
+router.get("/user/packs/:packid", packController.getPackcards);
 
 //Admin Controller
 router.get("/adminTickets", JWT.authenticateAdmin, adminController.getTickets);
@@ -57,5 +57,6 @@ router.post("/adminTickets", JWT.authenticateAdmin, adminController.postTicket);
 router.post("/trade/create", JWT.authenticateToken,tradeController.sendTrade);
 router.post("/trade/respond", JWT.authenticateToken,tradeController.respondTrade);
 router.get("/trade/:tradeid/cards", JWT.authenticateToken,tradeController.getTradeCards);
+
 
 module.exports = router;
