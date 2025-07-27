@@ -80,9 +80,11 @@ function getAvailablePacks(req, res) {
 }
 
 function getPackcards(req, res) {
-  const query = `SELECT * FROM cards WHERE packid = ${packid}`;
+  const packid = req.params.packid; 
+  
+  const query = `SELECT * FROM cards WHERE packid = $1`;
   pool
-    .query(query)
+    .query(query, [packid])
     .then((response) => {
       res.status(200).json(response.rows);
     })
