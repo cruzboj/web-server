@@ -134,7 +134,7 @@ function getPacks2(req, res) {
 async function getCardFromPack(req, res) {
   try {
     const userID = req.user.id;
-    const packID = req.body.packid;
+    const packID = req.params.packid;
 
     const coinQuery = `
       SELECT users.coins, packs.cost 
@@ -194,6 +194,7 @@ async function getCardFromPack(req, res) {
 
     await Promise.all(updatePromises);
 
+    pool.query("update ")
     return res
       .status(200)
       .json({ status: "Cards added successfully", cards: ownedChecks });
@@ -205,7 +206,7 @@ async function getCardFromPack(req, res) {
 
 
 
-function getRandomCards(cards, count = 2) {
+function getRandomCards(cards, count = 6) {
   if (!Array.isArray(cards) || cards.length <= count) {
     console.log("Card list is empty or not long enough");
     return [];

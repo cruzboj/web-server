@@ -40,7 +40,7 @@ function Register(req, res) { //Register
     });
 }
 
-function Login(req, res) {
+function Login(req, res) { 
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({
@@ -80,7 +80,7 @@ function Login(req, res) {
     });
 }
 
-function getUserInfo(req,res){
+function getUserInfo(req,res){ //Get user info for login
   const userID = req.user.id;
   const query = "select username,isadmin,coins from users where id = $1";
   pool.query(query,[userID])
@@ -92,7 +92,7 @@ function getUserInfo(req,res){
   })
 }
 
-function getAllUsers(req, res) {
+function getAllUsers(req, res) { //Get all users info
   query = `select * from users order by id asc`;
 
   pool.query(query).then((response) => {
@@ -103,7 +103,7 @@ function getAllUsers(req, res) {
   });
 }
 
-function getAllPacks(req, res) {
+function getAllPacks(req, res) { 
   query = "select * from packs order by packid asc";
 
   pool.query(query).then((response) => {
@@ -126,7 +126,7 @@ function getCardsFromPack(req, res) {
   });
 }
 
-function createPack(req, res) {
+function createPack(req, res) { //Create a pack
   query = "insert into packs (name,cost) values ($1,$2)";
 
   const packname = req.body.name;
