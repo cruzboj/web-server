@@ -219,6 +219,7 @@ function getRandomCards(cards) {
     const j = Math.floor(Math.random() * (i + 1));
     [cardsCopy[i], cardsCopy[j]] = [cardsCopy[j], cardsCopy[i]];
   }
+  const count = Math.min(6,cardsCopy.length);
   return cardsCopy.slice(0, count);
 }
 
