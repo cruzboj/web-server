@@ -1,6 +1,6 @@
 const pool = require("../pool");
 
-function getTickets(req, res) {
+function getTickets(req, res) { // Get all tickets
   pool.query("select * from admintickets").then((response) => {
     if (response.rows.length == 0) {
       return res.status(401).send("No Tickets");
@@ -47,6 +47,13 @@ function changeTicketStatus(req, res) {
   });
 }
 
+function getTicketRequest(req,res){
+  const ticketID = req.params.ticketid;
+  findTicketByID(ticketID).then((response) => {
+    res.status(200).send(response);
+  })
+}
+
 function findTicketByID(id) {
   const query = "select * from admintickets where ticketid = $1";
   return pool
@@ -83,4 +90,5 @@ module.exports = {
   getTickets,
   changeTicketStatus,
   postTicket,
+  getTicketRequest
 };
