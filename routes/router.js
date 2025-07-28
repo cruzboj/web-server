@@ -40,7 +40,7 @@ router.post("/admin/createPack", dbController.createPack);
 router.delete("/admin/cards/:cardid", dbController.deleteCard);
 router.delete("/admin/packs/:packid", dbController.deletePack);
 router.get("/users/search", dbController.searchForUser);
-router.get("/user",JWT.authenticateToken,dbController.getUserInfo);
+router.get("/user",JWT.authenticateToken ,dbController.getUserInfo);
 
 //Pack Controller
 // router.get("/packs", packController.getPacks);

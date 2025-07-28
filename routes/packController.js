@@ -194,7 +194,9 @@ async function getCardFromPack(req, res) {
 
     await Promise.all(updatePromises);
 
-    pool.query("update ")
+
+
+    pool.query("update users set coins=coins-$1 where id=$2",[cost,userID]);
     return res
       .status(200)
       .json({ status: "Cards added successfully", cards: ownedChecks });
