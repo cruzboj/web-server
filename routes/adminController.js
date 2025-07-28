@@ -91,9 +91,10 @@ function updateTicket(req, res) {
   const ticketID = req.body.ticketid;
   const NewDate = new Date();
   const adminResponse = req.body.adminResponse;
+  const newStatus = req.body.status;
   const query =
-    "update admintickets set response = $1, lastupdatedat = $2,status = 'In-progress' where ticketid = $3";
-  pool.query(query, [adminResponse, NewDate, ticketID]).then((response) => {
+    "update admintickets set response = $1, lastupdatedat = $2,status = $3 where ticketid = $4";
+  pool.query(query, [adminResponse, NewDate, newStatus, ticketID]).then((response) => {
     return res.status(200).json({"status":"ticket updated"});
   })
   .catch((err) => {
