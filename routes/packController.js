@@ -208,11 +208,11 @@ async function getCardFromPack(req, res) {
 
 
 
-function getRandomCards(cards, count = 6) {
-  if (!Array.isArray(cards) || cards.length <= count) {
-    console.log("Card list is empty or not long enough");
-    return [];
-  }
+function getRandomCards(cards) {
+  // if (!Array.isArray(cards) || cards.length <= count) {
+  //   console.log("Card list is empty or not long enough");
+  //   return [];
+  // }
   const cardsCopy = [...cards];
 
   for (let i = cardsCopy.length - 1; i > 0; i--) {
