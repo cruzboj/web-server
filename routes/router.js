@@ -41,6 +41,7 @@ router.delete("/admin/cards/:cardid", dbController.deleteCard);
 router.delete("/admin/packs/:packid", dbController.deletePack);
 router.get("/users/search", dbController.searchForUser);
 router.get("/user",JWT.authenticateToken ,dbController.getUserInfo);
+router.get("/user/cards/:userid",JWT.authenticateToken,dbController.getCardsFromUser);
 
 //Pack Controller
 // router.get("/packs", packController.getPacks);

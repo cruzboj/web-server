@@ -3,8 +3,8 @@ const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.JWT_SECRET || "your secret";
 const TOKEN_EXPIRATION = "365d";
 
-
-function getDB(req, res) { //To delete
+function getDB(req, res) {
+  //To delete
   pool
     .query("select * from packtest;")
     .then((response) => {
@@ -15,7 +15,8 @@ function getDB(req, res) { //To delete
     });
 }
 
-function Register(req, res) { //Register
+function Register(req, res) {
+  //Register
   console.log(req.body);
   const { username, password, email } = req.body;
 
@@ -40,7 +41,7 @@ function Register(req, res) { //Register
     });
 }
 
-function Login(req, res) { 
+function Login(req, res) {
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({
@@ -60,16 +61,22 @@ function Login(req, res) {
       }
       const user = result.rows[0];
       if (user.password === password) {
-        const token = jwt.sign({
-          id: user.id,
-          username: user.username,
-          isAdmin:user.isadmin
-        },
+        const token = jwt.sign(
+          {
+            id: user.id,
+            username: user.username,
+            isAdmin: user.isadmin,
+          },
           SECRET_KEY,
-          { expiresIn: TOKEN_EXPIRATION });
+          { expiresIn: TOKEN_EXPIRATION }
+        );
         res
           .status(200)
-          .send({ message: "Login Successful", isAdmin: user.isadmin, token:token});
+          .send({
+            message: "Login Successful",
+            isAdmin: user.isadmin,
+            token: token,
+          });
       } else {
         res.status(401).send("Invalid Login");
       }
@@ -80,19 +87,20 @@ function Login(req, res) {
     });
 }
 
-function getUserInfo(req,res){ //Get user info for login
+function getUserInfo(req, res) {
+  //Get user info for login
   const userID = req.user.id;
   const query = "select username,isadmin,coins from users where id = $1";
-  pool.query(query,[userID])
-  .then((response) => {
-    if(response.rows.length === 0){
+  pool.query(query, [userID]).then((response) => {
+    if (response.rows.length === 0) {
       return res.status(404).send("User Not found");
     }
     return res.status(200).send(response.rows[0]);
-  })
+  });
 }
 
-function getAllUsers(req, res) { //Get all users info
+function getAllUsers(req, res) {
+  //Get all users info
   query = `select * from users order by id asc`;
 
   pool.query(query).then((response) => {
@@ -103,7 +111,7 @@ function getAllUsers(req, res) { //Get all users info
   });
 }
 
-function getAllPacks(req, res) { 
+function getAllPacks(req, res) {
   query = "select * from packs order by packid asc";
 
   pool.query(query).then((response) => {
@@ -126,7 +134,8 @@ function getCardsFromPack(req, res) {
   });
 }
 
-function createPack(req, res) { //Create a pack
+function createPack(req, res) {
+  //Create a pack
   query = "insert into packs (name,cost) values ($1,$2)";
 
   const packname = req.body.name;
@@ -205,17 +214,33 @@ function deletePack(req, res) {
 function searchForUser(req, res) {
   const query = "select * from users where username = $1";
   const username = req.query.username;
-  pool.query(query, [username])
+  pool
+    .query(query, [username])
     .then((response) => {
       if (response.rows.length === 0) {
-        return res.status(404).json({ "error": "user not found" });
+        return res.status(404).json({ error: "user not found" });
       }
       return res.status(200).json(response.rows[0].id);
     })
     .catch((error) => {
       console.log(error);
-      return res.status(500).json({ "error": "unkown error" });
+      return res.status(500).json({ error: "unkown error" });
+    });
+}
+
+function getCardsFromUser(req, res) {
+  const userID = req.params.userid;
+  const query =
+    "select usercards.cardid,usercards.quantity,cards.name,cards.image_url from usercards inner join cards on usercards.cardid = cards.id  where userid = $1";
+  pool
+    .query(query, [userID])
+    .then((response) => {
+      return res.status(200).json(response.rows);
     })
+    .catch((err) => {
+      console.log("getCardsFromUser", err);
+      return res.status(500).json({ error: "error getting user data" });
+    });
 }
 
 module.exports = {
@@ -231,4 +256,5 @@ module.exports = {
   deletePack,
   searchForUser,
   getUserInfo,
+  getCardsFromUser,
 };
