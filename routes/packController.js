@@ -209,10 +209,6 @@ async function getCardFromPack(req, res) {
 
 
 function getRandomCards(cards) {
-  // if (!Array.isArray(cards) || cards.length <= count) {
-  //   console.log("Card list is empty or not long enough");
-  //   return [];
-  // }
   const cardsCopy = [...cards];
 
   for (let i = cardsCopy.length - 1; i > 0; i--) {
@@ -222,6 +218,19 @@ function getRandomCards(cards) {
   const count = Math.min(6,cardsCopy.length);
   return cardsCopy.slice(0, count);
 }
+
+
+//TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+// function setPackAvailablity(req,res){
+//   const packID = req.body.packid;
+//   const value = req.body.value;
+
+// }
+
+
+
 
 module.exports = {
   getAvailablePacks,

@@ -230,5 +230,5 @@ module.exports = {
   deleteCard,
   deletePack,
   searchForUser,
-  getUserInfo
+  getUserInfo,
 };

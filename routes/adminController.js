@@ -5,7 +5,7 @@ function getTickets(req, res) {
     if (response.rows.length == 0) {
       return res.status(401).send("No Tickets");
     }
-    res.status(200).json(response.rows[0]);
+    res.status(200).json(response.rows);
   });
 }
 
