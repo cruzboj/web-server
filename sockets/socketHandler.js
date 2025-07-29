@@ -49,13 +49,14 @@ function setupSocket(server) {
 
 function sendTradeToUser(p1_id, p2_id, p1_card, p2_card) {
   const socketID = userSocketMap.get(p2_id);
-  trade_data = {
+  const trade_data = {
     p1_id: p1_id,
     p2_id: p2_id,
     p1_card: p1_card,
     p2_card: p2_card,
   };
   console.log("sent trade request to:", p2_id);
+  console.log(userSocketMap);
   if (socketID) {
     io.to(socketID).emit("trade_offer", trade_data);
   }
