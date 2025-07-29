@@ -35,6 +35,8 @@ function sendTrade(req, res) {
   const user2_card = req.body.user2_card;
 
   socketTrade.sendTradeToUser(user1_id, user2_id, user1_card, user2_card);
+
+  res.status(200).json({"status":"Trade Sent"})
 }
 
 async function acceptTrade(req, res) {
