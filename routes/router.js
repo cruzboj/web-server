@@ -61,6 +61,7 @@ router.patch("/adminTickets",JWT.authenticateAdmin,adminController.updateTicket)
 router.post("/trade/create", JWT.authenticateToken,tradeController.sendTrade);
 router.post("/trade/respond", JWT.authenticateToken,tradeController.respondTrade);
 router.get("/trade/:tradeid/cards", JWT.authenticateToken,tradeController.getTradeCards);
+router.post("/trade/accept",JWT.authenticateToken,tradeController.acceptTrade);
 
 
 module.exports = router;

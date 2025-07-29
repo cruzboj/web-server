@@ -34,7 +34,14 @@ function authenticateAdmin(req,res,next){
     })
 }
 
+function getUserID(token){
+    const decoded = jwt.verify(token,SECRET_KEY);
+    const userId = decoded.id;
+    return userId;
+}
+
 module.exports = {
     authenticateToken,
-    authenticateAdmin
+    authenticateAdmin,
+    getUserID
 }
