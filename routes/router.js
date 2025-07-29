@@ -40,6 +40,8 @@ router.post("/admin/createPack", dbController.createPack);
 router.delete("/admin/cards/:cardid", dbController.deleteCard);
 router.delete("/admin/packs/:packid", dbController.deletePack);
 router.get("/user/search/:username", dbController.searchForUser);
+router.get("/user/searchID/:userid", JWT.authenticateToken,dbController.getUserFromID)
+router.get("/cards/search/:cardid",JWT.authenticateToken,dbController.getCardFromID);
 router.get("/user",JWT.authenticateToken ,dbController.getUserInfo);
 router.get("/user/cards/:userid",JWT.authenticateToken,dbController.getCardsFromUser);
 

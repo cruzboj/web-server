@@ -228,6 +228,39 @@ function searchForUser(req, res) {
     });
 }
 
+function getUserFromID(req,res){
+  const userID = req.params.userid;
+  const query = "select * from users where id = $1";
+  pool.query(query,[userID])
+  .then((response) => {
+    if (response.rows.length === 0){
+      return res.status(404).json({"error":"userID not found"})
+    }
+    return res.status(200).json(response.rows[0]);
+  })
+  .catch((err) => {
+    console.log("error getting user from id: ",err);
+    return res.status(500).json({"error":"error getting user from id"});
+  })
+}
+
+function getCardFromID(req,res){
+  const cardID = req.params.cardid;
+  const query = "select * from cards where id = $1";
+  pool.query(query,[cardID])
+  .then((response) => {
+    if(response.rows.length === 0){
+      return res.status(404).json({"error":"userID not found"})
+    }
+    return res.status(200).json(response.rows[0]);
+  })
+  .catch((err) => {
+    console.log("error getting card from id: ",err);
+    return res.status(500).json({"error":"error getting card from cardID"});
+  })
+
+}
+
 function getCardsFromUser(req, res) {
   const userID = req.params.userid;
   const query =
@@ -257,4 +290,6 @@ module.exports = {
   searchForUser,
   getUserInfo,
   getCardsFromUser,
+  getCardFromID,
+  getUserFromID
 };
