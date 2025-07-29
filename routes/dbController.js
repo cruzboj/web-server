@@ -213,7 +213,7 @@ function deletePack(req, res) {
 
 function searchForUser(req, res) {
   const query = "select * from users where username = $1";
-  const username = req.query.username;
+  const username = req.params.username;
   pool
     .query(query, [username])
     .then((response) => {
