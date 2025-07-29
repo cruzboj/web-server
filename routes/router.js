@@ -39,7 +39,7 @@ router.post("/admin/createCard", JWT.authenticateToken, dbController.createCard)
 router.post("/admin/createPack", dbController.createPack);
 router.delete("/admin/cards/:cardid", dbController.deleteCard);
 router.delete("/admin/packs/:packid", dbController.deletePack);
-router.get("/users/search/:username", dbController.searchForUser);
+router.get("/user/search/:username", dbController.searchForUser);
 router.get("/user",JWT.authenticateToken ,dbController.getUserInfo);
 router.get("/user/cards/:userid",JWT.authenticateToken,dbController.getCardsFromUser);
 
