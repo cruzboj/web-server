@@ -57,6 +57,7 @@ function sendTradeToUser(p1_id, p2_id, p1_card, p2_card) {
   };
   console.log("sent trade request to:", p2_id);
   console.log(userSocketMap);
+  console.log(trade_data);
   if (socketID) {
     io.to(socketID).emit("trade_offer", trade_data);
   }
