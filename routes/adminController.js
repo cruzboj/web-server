@@ -2,7 +2,7 @@ const pool = require("../pool");
 
 function getTickets(req, res) {
   // Get all tickets
-  pool.query("select * from admintickets").then((response) => {
+  pool.query("select * from admintickets order by ticketid").then((response) => {
     if (response.rows.length == 0) {
       return res.status(401).send("No Tickets");
     }
@@ -18,7 +18,7 @@ function postTicket(req, res) {
     if (!user) {
       return res.status(503).send(`Invalid username: ${username}`);
     }
-    const query = `insert into admintickets (username,description) values ($1,$2)`;
+    const query = `insert into admintickets (username,description,status) values ($1,$2,'Open')`;
     pool
       .query(query, [username, description])
       .then((response) => {
