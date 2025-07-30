@@ -64,10 +64,11 @@ function sendTradeToUser(p1_id, p2_id, p1_card, p2_card) {
 }
 
 function sendTradeConfirmation(p1_id) {
-  const socketID = userSocketMap.get(parseInt(p1_id));
+  const userID = Number(p1_id)
+  const socketID = userSocketMap.get(userID);
   if (socketID) {
     console.log("sent trade confirmation to user:", p1_id);
-    io.to(socketID).emit("trade_accepted", ("trade was accepted"));
+    io.to(socketID).emit("trade_accepted", "trade was accepted");
   }
 }
 
