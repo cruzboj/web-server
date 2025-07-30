@@ -264,7 +264,7 @@ function getCardFromID(req,res){
 function getCardsFromUser(req, res) {
   const userID = req.params.userid;
   const query =
-    "select usercards.cardid,usercards.quantity,cards.name,cards.image_url,cards.color_id from usercards inner join cards on usercards.cardid = cards.id  where userid = $1";
+    "select usercards.cardid,usercards.quantity,cards.name,cards.image_url,cards.color_id,cards.packid from usercards inner join cards on usercards.cardid = cards.id  where userid = $1";
   pool
     .query(query, [userID])
     .then((response) => {
