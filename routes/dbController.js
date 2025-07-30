@@ -314,6 +314,37 @@ function getAllCards(req, res) {
   });
 }
 
+async function updateUser(req, res) {
+  const { username, password, email,id } = req.body;
+
+  if (!username || !password || !email || !id) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    // Check if username is already taken by another user
+    const existingUser = await pool.query(
+      "SELECT * FROM users WHERE username = $1 AND id <> $2",
+      [username, id]
+    );
+
+    if (existingUser.rows.length > 0) {
+      return res.status(409).json({ error: "Username is already taken" });
+    }
+
+    await pool.query(
+      "UPDATE users SET username = $1, password = $2, email = $3 WHERE id = $4",
+      [username, password, email, id]
+    );
+
+    return res.status(200).json({ message: "User updated successfully" });
+  } catch (err) {
+    console.error("Error updating user:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+
 module.exports = {
   getDB,
   Register,
@@ -332,4 +363,5 @@ module.exports = {
   getUserFromID,
   removeCardFromUser,
   getAllCards,
+  updateUser
 };

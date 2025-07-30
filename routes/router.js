@@ -48,10 +48,9 @@ router.get("/user",JWT.authenticateToken ,dbController.getUserInfo);
 router.get("/user/cards/:userid",JWT.authenticateToken,dbController.getCardsFromUser);
 router.patch("/user/cards/remove",JWT.authenticateAdmin,dbController.removeCardFromUser);
 router.get("/cards",dbController.getAllCards);
+router.patch("/user",JWT.authenticateToken,dbController.updateUser);
 
 //Pack Controller
-// router.get("/packs", packController.getPacks);
-// router.get("/cards", packController.getCards);
 router.get("/user/packs",packController.getAvailablePacks);
 router.get("/user/packs/:packid", packController.getPackcards);
 router.get("/pack/getPack/:packid",JWT.authenticateToken, packController.getCardFromPack);
