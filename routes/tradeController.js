@@ -68,6 +68,7 @@ async function acceptTrade(req, res) {
     );
 
     await client.query("COMMIT");
+    socketTrade.sendTradeConfirmation(user1_id);
     res.status(200).json({ status: "Trade Successful" });
   } catch (error) {
     await client.query("ROLLBACK");
