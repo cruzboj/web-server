@@ -307,7 +307,7 @@ async function removeCardFromUser(req, res) {
 function getAllCards(req,res){
   const query = "select * from cards";
   pool.query(query).then((response) => {
-    res.status(200).json(response);
+    res.status(200).json(response.rows);
   })
 }
 
