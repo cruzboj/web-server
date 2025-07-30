@@ -70,13 +70,11 @@ function Login(req, res) {
           SECRET_KEY,
           { expiresIn: TOKEN_EXPIRATION }
         );
-        res
-          .status(200)
-          .send({
-            message: "Login Successful",
-            isAdmin: user.isadmin,
-            token: token,
-          });
+        res.status(200).send({
+          message: "Login Successful",
+          isAdmin: user.isadmin,
+          token: token,
+        });
       } else {
         res.status(401).send("Invalid Login");
       }
@@ -228,37 +226,38 @@ function searchForUser(req, res) {
     });
 }
 
-function getUserFromID(req,res){
+function getUserFromID(req, res) {
   const userID = req.params.userid;
   const query = "select * from users where id = $1";
-  pool.query(query,[userID])
-  .then((response) => {
-    if (response.rows.length === 0){
-      return res.status(404).json({"error":"userID not found"})
-    }
-    return res.status(200).json(response.rows[0]);
-  })
-  .catch((err) => {
-    console.log("error getting user from id: ",err);
-    return res.status(500).json({"error":"error getting user from id"});
-  })
+  pool
+    .query(query, [userID])
+    .then((response) => {
+      if (response.rows.length === 0) {
+        return res.status(404).json({ error: "userID not found" });
+      }
+      return res.status(200).json(response.rows[0]);
+    })
+    .catch((err) => {
+      console.log("error getting user from id: ", err);
+      return res.status(500).json({ error: "error getting user from id" });
+    });
 }
 
-function getCardFromID(req,res){
+function getCardFromID(req, res) {
   const cardID = req.params.cardid;
   const query = "select * from cards where id = $1";
-  pool.query(query,[cardID])
-  .then((response) => {
-    if(response.rows.length === 0){
-      return res.status(404).json({"error":"userID not found"})
-    }
-    return res.status(200).json(response.rows[0]);
-  })
-  .catch((err) => {
-    console.log("error getting card from id: ",err);
-    return res.status(500).json({"error":"error getting card from cardID"});
-  })
-
+  pool
+    .query(query, [cardID])
+    .then((response) => {
+      if (response.rows.length === 0) {
+        return res.status(404).json({ error: "userID not found" });
+      }
+      return res.status(200).json(response.rows[0]);
+    })
+    .catch((err) => {
+      console.log("error getting card from id: ", err);
+      return res.status(500).json({ error: "error getting card from cardID" });
+    });
 }
 
 function getCardsFromUser(req, res) {
@@ -276,6 +275,35 @@ function getCardsFromUser(req, res) {
     });
 }
 
+async function removeCardFromUser(req, res) {
+  const userid = req.body.userid;
+  const cardid = req.body.cardid;
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    // First, try to delete the row if quantity = 1
+    await connection.query(
+      "DELETE FROM user_cards WHERE userid = $1 AND cardid = $2 AND quantity = 1",
+      [userid, cardid]
+    );
+
+    // If quantity > 1, decrement it
+    await connection.query(
+      "UPDATE user_cards SET quantity = quantity - 1 WHERE userid = ? AND cardid = ? AND quantity > 1",
+      [userid, cardid]
+    );
+
+    await connection.commit();
+  } catch (err) {
+    await connection.rollback();
+    console.error("Failed to decrement card quantity:", err);
+    throw err;
+  } finally {
+    connection.release();
+  }
+}
+
 module.exports = {
   getDB,
   Register,
@@ -291,5 +319,6 @@ module.exports = {
   getUserInfo,
   getCardsFromUser,
   getCardFromID,
-  getUserFromID
+  getUserFromID,
+  removeCardFromUser
 };

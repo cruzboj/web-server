@@ -46,6 +46,7 @@ router.get("/user/searchID/:userid", JWT.authenticateToken,dbController.getUserF
 router.get("/cards/search/:cardid",JWT.authenticateToken,dbController.getCardFromID);
 router.get("/user",JWT.authenticateToken ,dbController.getUserInfo);
 router.get("/user/cards/:userid",JWT.authenticateToken,dbController.getCardsFromUser);
+router.patch("/user/cards/remove",JWT.authenticateAdmin,dbController.removeCardFromUser);
 
 //Pack Controller
 // router.get("/packs", packController.getPacks);
