@@ -68,6 +68,8 @@ function sendTradeConfirmation(p1_id) {
   const socketID = userSocketMap.get(userID);
   if (socketID) {
     console.log("sent trade confirmation to user:", p1_id);
+    console.log(userSocketMap);
+    console.log(socketID);
     io.to(socketID).emit("trade_accepted", "trade was accepted");
   }
 }
