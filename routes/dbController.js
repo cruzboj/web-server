@@ -278,37 +278,40 @@ function getCardsFromUser(req, res) {
 async function removeCardFromUser(req, res) {
   const userid = req.body.userid;
   const cardid = req.body.cardid;
-  const connection = await pool.getConnection();
+
+  const client = await pool.connect(); // pg syntax
+
   try {
-    await connection.beginTransaction();
+    await client.query("BEGIN");
 
     // First, try to delete the row if quantity = 1
-    await connection.query(
-      "DELETE FROM user_cards WHERE userid = $1 AND cardid = $2 AND quantity = 1",
+    await client.query(
+      "DELETE FROM usercards WHERE userid = $1 AND cardid = $2 AND quantity = 1",
       [userid, cardid]
     );
 
     // If quantity > 1, decrement it
-    await connection.query(
-      "UPDATE user_cards SET quantity = quantity - 1 WHERE userid = ? AND cardid = ? AND quantity > 1",
+    await client.query(
+      "UPDATE usercards SET quantity = quantity - 1 WHERE userid = $1 AND cardid = $2 AND quantity > 1",
       [userid, cardid]
     );
 
-    await connection.commit();
+    await client.query("COMMIT");
+    res.status(200).json({ status: "Card updated successfully" });
   } catch (err) {
-    await connection.rollback();
+    await client.query("ROLLBACK");
     console.error("Failed to decrement card quantity:", err);
-    throw err;
+    res.status(500).json({ error: "Internal server error" });
   } finally {
-    connection.release();
+    client.release();
   }
 }
 
-function getAllCards(req,res){
+function getAllCards(req, res) {
   const query = "select * from cards";
   pool.query(query).then((response) => {
     res.status(200).json(response.rows);
-  })
+  });
 }
 
 module.exports = {
@@ -328,5 +331,5 @@ module.exports = {
   getCardFromID,
   getUserFromID,
   removeCardFromUser,
-  getAllCards
+  getAllCards,
 };
