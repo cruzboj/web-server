@@ -8,6 +8,7 @@ const adminController = require("./adminController.js");
 const tradeController = require("./tradeController.js");
 const upload = require("../NewsUpload.js");
 const JWT = require("../JWT.js");
+const parser = require("../Cloudinary.js");
 
 // const db = require('../controllers/dbController');
 // router.get('/tasks', db.getTasks);
@@ -24,7 +25,7 @@ router.get("/news", newsController.getNews);
 router.post(
   "/news",
   JWT.authenticateAdmin,
-  upload.single("image"),
+  parser.single("image"),
   newsController.postNews
 );
 router.delete("/news/:id",JWT.authenticateAdmin,newsController.deleteNews);
