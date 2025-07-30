@@ -70,7 +70,7 @@ function sendTradeConfirmation(p1_id) {
     console.log("sent trade confirmation to user:", p1_id);
     console.log(userSocketMap);
     console.log(socketID);
-    io.to(socketID).emit("trade_accepted", "trade was accepted");
+    io.to(socketID).emit("trade_accepted", "Your Trade was Accepted, Congratulations!");
   }
 }
 
