@@ -32,8 +32,22 @@ function postNews(req, res) {
         });
 }
 
+function deleteNews(req,res){
+    const newsID = req.body.id;
+    const query = "delete from news where id = $1";
+    pool.query(query,[newsID])
+    .then((response) => {
+        return res.status(200).json({"message":"News Deleted"});
+    })
+    .catch((err) => {
+        console.log("Error deleting news:",err);
+        return res.status(500).json({"error":"error deleting news"});
+    })
+}
+
 
 module.exports = {
     getNews,
-    postNews
+    postNews,
+    deleteNews
 }

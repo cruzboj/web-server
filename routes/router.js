@@ -27,6 +27,7 @@ router.post(
   upload.single("image"),
   newsController.postNews
 );
+router.delete("/news",JWT.authenticateAdmin,newsController.deleteNews);
 
 //DB controller
 router.get("/db", dbController.getDB);
