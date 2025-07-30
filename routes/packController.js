@@ -77,8 +77,7 @@ async function getCardFromPack(req, res) {
             userID,
             card.id,
           ])
-          .then((res) => ({...card, owned: res.rows.length > 0,}
-          ))
+          .then((res) => ({ ...card, owned: res.rows.length > 0 }))
       )
     );
 
@@ -107,8 +106,6 @@ async function getCardFromPack(req, res) {
     return res.status(500).json({ error: "Internal server error" });
   }
 }
-
-
 
 function getRandomCards(cards, count = 2) {
   if (!Array.isArray(cards) || cards.length <= count) {
@@ -172,8 +169,7 @@ async function getCardFromPack(req, res) {
             userID,
             card.id,
           ])
-          .then((res) => ({...card, owned: res.rows.length > 0,}
-          ))
+          .then((res) => ({ ...card, owned: res.rows.length > 0 }))
       )
     );
 
@@ -194,9 +190,7 @@ async function getCardFromPack(req, res) {
 
     await Promise.all(updatePromises);
 
-
-
-    pool.query("update users set coins=coins-$1 where id=$2",[cost,userID]);
+    pool.query("update users set coins=coins-$1 where id=$2", [cost, userID]);
     return res
       .status(200)
       .json({ status: "Cards added successfully", cards: ownedChecks });
@@ -206,8 +200,6 @@ async function getCardFromPack(req, res) {
   }
 }
 
-
-
 function getRandomCards(cards) {
   const cardsCopy = [...cards];
 
@@ -215,26 +207,37 @@ function getRandomCards(cards) {
     const j = Math.floor(Math.random() * (i + 1));
     [cardsCopy[i], cardsCopy[j]] = [cardsCopy[j], cardsCopy[i]];
   }
-  const count = Math.min(6,cardsCopy.length);
+  const count = Math.min(6, cardsCopy.length);
   return cardsCopy.slice(0, count);
 }
 
-
-//TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-// function setPackAvailablity(req,res){
-//   const packID = req.body.packid;
-//   const value = req.body.value;
-
-// }
-
-
-
+function insertCard(req, res) {
+  const userid = req.body.userid;
+  const cardid = req.body.cardid;
+  if (!userid || !cardid) {
+    return res.status(401).json({ error: "invalid parameters" });
+  }
+  const query = `
+  INSERT INTO usercards (userid, cardid, quantity)
+  VALUES ($1, $2, 1)
+  ON CONFLICT (userid, cardid)
+  DO UPDATE SET quantity = usercards.quantity + 1
+`;
+  pool
+    .query(query, [userid, cardid])
+    .then((response) => {
+      return res.status(200).json({ status: "card inserted succesfully" });
+    })
+    .catch((err) => {
+      console.log("error inserting card into user", err);
+      return res.status(500).json({ error: "internal server error" });
+    });
+}
 
 module.exports = {
   getAvailablePacks,
   getPackcards,
   getPacks2,
   getCardFromPack,
+  insertCard,
 };
