@@ -33,7 +33,7 @@ function postNews(req, res) {
 }
 
 function deleteNews(req,res){
-    const newsID = req.body.id;
+    const newsID = req.params.id
     const query = "delete from news where id = $1";
     pool.query(query,[newsID])
     .then((response) => {
