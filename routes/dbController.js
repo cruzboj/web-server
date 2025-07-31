@@ -320,10 +320,9 @@ function getCardFromID(req, res) {
 
 async function getCardsFromUser(req, res) {
   const userID = req.params.userid;
-  const userCheck = await pool.query("select * from users where id = $1", [
-    userID,
+  const userCheck = await pool.query("select * from users where id = $1", [userID,
   ]);
-  if (!userCheck) {
+  if (userCheck.rows.length === 0) {
     return res.status(404).json({ error: "User Not Found" });
   }
   const query =
