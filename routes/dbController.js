@@ -22,10 +22,17 @@ async function Register(req, res) {
   if (!username || !password || !email) {
     return res.status(400).json({ error: "Missing fields" });
   }
-  const usernameCheck = await pool.query("select * from users where username = $1",[username]);
-  const emailCheck = await pool.query("select * from users where email = $1",[email]);
-  if (usernameCheck.rows.length !== 0 || emailCheck.rows.length !== 0){
-    return res.status(401).json({"error":"Username or Email are already taken"})
+  const usernameCheck = await pool.query(
+    "select * from users where username = $1",
+    [username]
+  );
+  const emailCheck = await pool.query("select * from users where email = $1", [
+    email,
+  ]);
+  if (usernameCheck.rows.length !== 0 || emailCheck.rows.length !== 0) {
+    return res
+      .status(401)
+      .json({ error: "Username or Email are already taken" });
   }
 
   const insertQuery = `
@@ -37,11 +44,11 @@ async function Register(req, res) {
   pool
     .query(insertQuery, [username, password, email])
     .then((response) => {
-      res.status(201).json(response.rows[0]);
+      res.status(201).json({"status":"Account Created Succesfully"});
     })
     .catch((err) => {
       console.error("Insert error:", err);
-      res.status(500).json({ error: "Insert failed", details: err });
+      res.status(500).json({ error: "Internal Server Error"});
     });
 }
 
@@ -92,7 +99,8 @@ function Login(req, res) {
 function getUserInfo(req, res) {
   //Get user info for login
   const userID = req.user.id;
-  const query = "SELECT id, username, isadmin, coins, email, password FROM users WHERE id = $1";
+  const query =
+    "SELECT id, username, isadmin, coins, email, password FROM users WHERE id = $1";
   pool.query(query, [userID]).then((response) => {
     if (response.rows.length === 0) {
       return res.status(404).send("User Not found");
@@ -319,7 +327,7 @@ function getAllCards(req, res) {
 }
 
 async function updateUser(req, res) {
-  const { username, password, email,id } = req.body;
+  const { username, password, email, id } = req.body;
 
   if (!username || !password || !email || !id) {
     return res.status(400).json({ error: "Missing required fields" });
@@ -348,7 +356,6 @@ async function updateUser(req, res) {
   }
 }
 
-
 module.exports = {
   getDB,
   Register,
@@ -367,5 +374,5 @@ module.exports = {
   getUserFromID,
   removeCardFromUser,
   getAllCards,
-  updateUser
+  updateUser,
 };
