@@ -290,7 +290,7 @@ function getUserFromID(req, res) {
       if (response.rows.length === 0) {
         return res.status(404).json({ error: "userID not found" });
       }
-      return res.status(200).json(response.rows[0].username);
+      return res.status(200).json(response.rows[0]);
     })
     .catch((err) => {
       console.log("error getting user from id: ", err);
