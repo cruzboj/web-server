@@ -2,12 +2,14 @@ const pool = require("../pool");
 
 function getTickets(req, res) {
   // Get all tickets
-  pool.query("select * from admintickets order by ticketid").then((response) => {
-    if (response.rows.length == 0) {
-      return res.status(401).send("No Tickets");
-    }
-    res.status(200).json(response.rows);
-  });
+  pool
+    .query("select * from admintickets order by ticketid")
+    .then((response) => {
+      if (response.rows.length == 0) {
+        return res.status(401).send("No Tickets");
+      }
+      res.status(200).json(response.rows);
+    });
 }
 
 function postTicket(req, res) {
@@ -30,23 +32,6 @@ function postTicket(req, res) {
       });
   });
 }
-
-// function changeTicketStatus(req, res) {
-//   const id = req.body.id;
-//   const afterStatus = req.body.changeStatus;
-//   findTicketByID(id).then((ticket) => {
-//     if (!ticket) {
-//       return res.status(503).send(`No ticket found with id ${id}`);
-//     }
-//     query = `update admintickets set status = $1,lastupdatedat = current_timestamp where ticketid = $2`;
-//     pool.query(query, [afterStatus, id]).then((response) => {
-//       if (response.rowCount === 0) {
-//         return res.status(404).send("Error updating");
-//       }
-//       return res.status(200).send("Ticket updated Succesfully");
-//     });
-//   });
-// }
 
 function getTicketRequest(req, res) {
   const ticketID = req.params.ticketid;
@@ -87,26 +72,34 @@ function findUser(username) {
     });
 }
 
-function updateTicket(req, res) {
+async function updateTicket(req, res) {
   const ticketID = req.body.ticketid;
   const NewDate = new Date();
   const adminResponse = req.body.adminResponse;
   const newStatus = req.body.status;
+  if (!ticketID || !NewDate || !adminResponse || !newStatus){
+    return res.status(401).json({"error":"missing Parameters"});
+  }
+  const checkTicket = await pool.query("select * from admintickets where ticketid = $1",[ticketID]);
+  if(checkTicket.rows.length !== 1) {
+    return res.status(404).json({"error":"Ticket not found"});
+  }
   const query =
     "update admintickets set response = $1, lastupdatedat = $2,status = $3 where ticketid = $4";
-  pool.query(query, [adminResponse, NewDate, newStatus, ticketID]).then((response) => {
-    return res.status(200).json({"status":"ticket updated"});
-  })
-  .catch((err) => {
-    console.log("error updating ticket",err);
-    return res.status(500).json({"error":"error updating ticket"});
-  });
+  pool
+    .query(query, [adminResponse, NewDate, newStatus, ticketID])
+    .then((response) => {
+      return res.status(200).json({ status: "ticket updated" });
+    })
+    .catch((err) => {
+      console.log("error updating ticket", err);
+      return res.status(500).json({ error: "error updating ticket" });
+    });
 }
 
 module.exports = {
   getTickets,
-  // changeTicketStatus,
   postTicket,
   getTicketRequest,
-  updateTicket
+  updateTicket,
 };

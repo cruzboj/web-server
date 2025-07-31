@@ -15,7 +15,6 @@ router.post("/news",JWT.authenticateAdmin,parser.single("image"),newsController.
 router.delete("/news/:id",JWT.authenticateAdmin,newsController.deleteNews);//V
 
 //DB controller
-// router.get("/db", dbController.getDB);
 router.post("/db", dbController.Register);//V
 router.post("/login", dbController.Login);//V
 router.get("/admin/db", JWT.authenticateAdmin,dbController.getAllUsers);//V
