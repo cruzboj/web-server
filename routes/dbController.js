@@ -187,6 +187,13 @@ function createCard(req, res) {
   const color_id = req.body.color_id;
   const packid = req.body.packid;
 
+	if (!name || !image_url || !color_id || !packid){
+		return res.status(403).json({"error":"Missing parameters"})
+	}
+	if (color_id > 2 || color_id < 1){
+		return res.status(403).json({"error":"Invalid Card Color"})
+	}
+
   pool
     .query(query, [name, image_url, color_id, packid])
     .then((response) => {
@@ -194,6 +201,7 @@ function createCard(req, res) {
     })
     .catch((error) => {
       console.log(`error creating card:`, error);
+	  return res.status(500).json({"error":"Internal Server Error"})
     });
 }
 
