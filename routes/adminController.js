@@ -103,9 +103,30 @@ async function updateTicket(req, res) {
     });
 }
 
+async function getUserTickets(req,res){
+  const userid = req.params.userid;
+  if(!userid){
+    return res.status(401).json({"error":"Missing Parameters"})
+  }
+  const userCheck = await pool.query("select * from users where id=$1",[userid]);
+  if (userCheck.rows.length === 0){
+    return res.status(404).json({"error":"User Not Found"})
+  }
+  console.log(userCheck.rows[0].username);
+  pool.query("select * from admintickets where username = $1",[userCheck.rows[0].username])
+  .then((response) => {
+    return res.status(200).json(response.rows);
+  })
+  .catch((err) => {
+    console.log("error fetching user tickets",err);
+    return res.status(500).json({"error":"Internal Server Error"});
+  })
+}
+
 module.exports = {
   getTickets,
   postTicket,
   getTicketRequest,
   updateTicket,
+  getUserTickets
 };

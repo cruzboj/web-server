@@ -42,6 +42,7 @@ router.post("/pack/insertCard",JWT.authenticateAdmin,packController.insertCard);
 router.get("/adminTickets", JWT.authenticateAdmin, adminController.getTickets);//v
 router.post("/adminTickets", JWT.authenticateToken, adminController.postTicket);//v
 router.get("/adminTickets/:ticketid",JWT.authenticateAdmin,adminController.getTicketRequest);//v
+router.get("/adminTickets/getUser/:userid",JWT.authenticateToken,adminController.getUserTickets);
 router.patch("/adminTickets",JWT.authenticateAdmin,adminController.updateTicket);//v
 
 //Trade Controller
