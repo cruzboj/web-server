@@ -361,7 +361,7 @@ async function removeCardFromUser(req, res) {
     );
 
     await client.query("COMMIT");
-    res.status(200).json({ status: "Card updated successfully" });
+    res.status(200).json({ status: "Card removed successfully" });
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Failed to decrement card quantity:", err);
@@ -375,6 +375,10 @@ function getAllCards(req, res) {
   const query = "select * from cards";
   pool.query(query).then((response) => {
     res.status(200).json(response.rows);
+  })
+  .catch((err) => {
+	console.log("error loading all cards",err);
+	return res.status(500).json({"error":"Internal Server Error"})
   });
 }
 
