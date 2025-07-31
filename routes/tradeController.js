@@ -7,9 +7,12 @@ function sendTrade(req, res) {
   const user1_card = req.body.user1_card;
   const user2_card = req.body.user2_card;
 
+  if (!user1_id || !user1_card || !user2_card || !user2_id){
+    return res.status(401).json({"error":"missing parameters"})
+  }
   socketTrade.sendTradeToUser(user1_id, user2_id, user1_card, user2_card);
 
-  res.status(200).json({ status: "Trade Sent" });
+  return res.status(200).json({ status: "Trade Sent" });
 }
 
 async function acceptTrade(req, res) {
