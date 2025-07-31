@@ -255,6 +255,9 @@ function deletePack(req, res) {
 function searchForUser(req, res) {
   const query = "select * from users where username = $1";
   const username = req.params.username;
+  if (!username){
+	return res.status(401).json({"error":"Missing Parameters"})
+  }
   pool
     .query(query, [username])
     .then((response) => {
@@ -272,6 +275,9 @@ function searchForUser(req, res) {
 function getUserFromID(req, res) {
   const userID = req.params.userid;
   const query = "select * from users where id = $1";
+  if (!userID){
+	return res.status(401).json({"error":"Missing Parameters"})
+  }
   pool
     .query(query, [userID])
     .then((response) => {
@@ -289,11 +295,14 @@ function getUserFromID(req, res) {
 function getCardFromID(req, res) {
   const cardID = req.params.cardid;
   const query = "select * from cards where id = $1";
+  if (!cardID){
+	return res.status(401).json({"error":"Missing Parameters"})
+  }
   pool
     .query(query, [cardID])
     .then((response) => {
       if (response.rows.length === 0) {
-        return res.status(404).json({ error: "userID not found" });
+        return res.status(404).json({ error: "card not found" });
       }
       return res.status(200).json(response.rows[0]);
     })
