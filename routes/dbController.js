@@ -100,16 +100,18 @@ function getUserInfo(req, res) {
   const userID = req.user.id;
   const query =
     "SELECT id, username, isadmin, coins, email, password FROM users WHERE id = $1";
-  pool.query(query, [userID]).then((response) => {
-    if (response.rows.length === 0) {
-      return res.status(404).send("User Not found");
-    }
-    return res.status(200).send(response.rows[0]);
-  })
-  .catch((err) => {
-	console.log("Error getting user info",err);
-	return res.status(500).json({"error":"Internal Server Error"})
-  });
+  pool
+    .query(query, [userID])
+    .then((response) => {
+      if (response.rows.length === 0) {
+        return res.status(404).send("User Not found");
+      }
+      return res.status(200).send(response.rows[0]);
+    })
+    .catch((err) => {
+      console.log("Error getting user info", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    });
 }
 
 function getAllUsers(req, res) {
@@ -259,8 +261,8 @@ function deletePack(req, res) {
 function searchForUser(req, res) {
   const query = "select * from users where username = $1";
   const username = req.params.username;
-  if (!username){
-	return res.status(401).json({"error":"Missing Parameters"})
+  if (!username) {
+    return res.status(401).json({ error: "Missing Parameters" });
   }
   pool
     .query(query, [username])
@@ -279,8 +281,8 @@ function searchForUser(req, res) {
 function getUserFromID(req, res) {
   const userID = req.params.userid;
   const query = "select * from users where id = $1";
-  if (!userID){
-	return res.status(401).json({"error":"Missing Parameters"})
+  if (!userID) {
+    return res.status(401).json({ error: "Missing Parameters" });
   }
   pool
     .query(query, [userID])
@@ -299,8 +301,8 @@ function getUserFromID(req, res) {
 function getCardFromID(req, res) {
   const cardID = req.params.cardid;
   const query = "select * from cards where id = $1";
-  if (!cardID){
-	return res.status(401).json({"error":"Missing Parameters"})
+  if (!cardID) {
+    return res.status(401).json({ error: "Missing Parameters" });
   }
   pool
     .query(query, [cardID])
@@ -318,9 +320,11 @@ function getCardFromID(req, res) {
 
 async function getCardsFromUser(req, res) {
   const userID = req.params.userid;
-  const userCheck = await pool.query("select * from users where id = $1",[userID]);
-  if (!userCheck){
-	return res.status(404).json({"error":"User Not Found"})
+  const userCheck = await pool.query("select * from users where id = $1", [
+    userID,
+  ]);
+  if (!userCheck) {
+    return res.status(404).json({ error: "User Not Found" });
   }
   const query =
     "select usercards.cardid,usercards.quantity,cards.name,cards.image_url,cards.color_id,cards.packid from usercards inner join cards on usercards.cardid = cards.id  where userid = $1";
@@ -339,9 +343,14 @@ async function removeCardFromUser(req, res) {
   const userid = req.body.userid;
   const cardid = req.body.cardid;
 
-  const UserCardCheck = await pool.query("select * from usercards where userid=$1 and cardid = $2",[userid,cardid]);
-  if (UserCardCheck.rows.length === 0){
-	return res.status(401).json({"error":"User is not recognized or Does not own this card"});
+  const UserCardCheck = await pool.query(
+    "select * from usercards where userid=$1 and cardid = $2",
+    [userid, cardid]
+  );
+  if (UserCardCheck.rows.length === 0) {
+    return res
+      .status(401)
+      .json({ error: "User is not recognized or Does not own this card" });
   }
   const client = await pool.connect(); // pg syntax
 
@@ -373,13 +382,15 @@ async function removeCardFromUser(req, res) {
 
 function getAllCards(req, res) {
   const query = "select * from cards";
-  pool.query(query).then((response) => {
-    res.status(200).json(response.rows);
-  })
-  .catch((err) => {
-	console.log("error loading all cards",err);
-	return res.status(500).json({"error":"Internal Server Error"})
-  });
+  pool
+    .query(query)
+    .then((response) => {
+      res.status(200).json(response.rows);
+    })
+    .catch((err) => {
+      console.log("error loading all cards", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    });
 }
 
 async function updateUser(req, res) {
@@ -397,8 +408,16 @@ async function updateUser(req, res) {
     );
 
     if (existingUser.rows.length > 0) {
-      return res.status(409).json({ error: "Username is already taken" });
+      return res.status(409).json({ "error": "Username is already taken" });
     }
+    const existingEmail = await pool.query(
+      "SELECT * FROM users WHERE email = $1 AND id <> $2",
+      [email, id]
+    );
+
+	if (existingEmail.rows.length > 0){
+		return res.status(409).json({"error":"Email is already taken"})
+	}
 
     await pool.query(
       "UPDATE users SET username = $1, password = $2, email = $3 WHERE id = $4",
