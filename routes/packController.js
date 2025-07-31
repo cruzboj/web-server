@@ -14,9 +14,12 @@ function getAvailablePacks(req, res) {
     });
 }
 
-function getPackcards(req, res) {
+async function getPackcards(req, res) {
   const packid = req.params.packid;
-
+  const packCheck = await pool.query("select * from packs where packid = $1",[packid]);
+  if (packCheck.rows.length === 0){
+    return res.stauts(404).json({"error":"Pack Not Found"})
+  }
   const query = `SELECT * FROM cards WHERE packid = $1 ORDER BY RANDOM() LIMIT 6`;
   pool
     .query(query, [packid])
@@ -27,13 +30,6 @@ function getPackcards(req, res) {
       console.error("Error fetching cards:", error);
       res.status(500).json({ error: "Internal server error" });
     });
-}
-
-function getPacks2(req, res) {
-  const query = "select * from packs";
-  pool.query(query).then((response) => {
-    res.status(200).json(response.rows);
-  });
 }
 
 async function getCardFromPack(req, res) {
@@ -217,10 +213,14 @@ async function insertCard(req, res) {
   if (!userid || !cardid) {
     return res.status(401).json({ error: "invalid parameters" });
   }
-  const userCheck = await pool.query("select * from users where id = $1",[userid]);
-  const cardCheck = await pool.query("select * from cards where id = $1",[cardid]);
-  if (userCheck.rows.length === 0 || cardCheck.rows.length === 0){
-    return res.status(404).json({"error":"user or card are invalid"})
+  const userCheck = await pool.query("select * from users where id = $1", [
+    userid,
+  ]);
+  const cardCheck = await pool.query("select * from cards where id = $1", [
+    cardid,
+  ]);
+  if (userCheck.rows.length === 0 || cardCheck.rows.length === 0) {
+    return res.status(404).json({ error: "user or card are invalid" });
   }
   const query = `
   INSERT INTO usercards (userid, cardid, quantity)
