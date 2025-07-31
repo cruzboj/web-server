@@ -33,9 +33,13 @@ function postNews(req, res) {
         });
 }
 
-function deleteNews(req,res){
+async function deleteNews(req,res){
     const newsID = req.params.id
     const query = "delete from news where id = $1";
+    let newsCheck = await pool.query("select * from news where id = $1");
+    if (newsCheck.rows.length === 0){
+        return res.status(404).json({"error":"news not found"})
+    }
     pool.query(query,[newsID])
     .then((response) => {
         return res.status(200).json({"message":"News Deleted"});
