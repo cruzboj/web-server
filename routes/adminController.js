@@ -1,7 +1,6 @@
 const pool = require("../pool");
 
 function getTickets(req, res) {
-  // Get all tickets
   pool
     .query("select * from admintickets order by ticketid")
     .then((response) => {
@@ -36,6 +35,9 @@ function postTicket(req, res) {
 function getTicketRequest(req, res) {
   const ticketID = req.params.ticketid;
   findTicketByID(ticketID).then((response) => {
+    if (response == null) {
+      return res.status(404).json({"error":"missing Ticket"});
+    }
     res.status(200).send(response);
   });
 }
@@ -52,7 +54,7 @@ function findTicketByID(id) {
     })
     .catch((error) => {
       console.error(`DB error in findTicketByID: `, error);
-      throw error;
+      return res.status(500).json({"error":"Internal Server Error"})
     });
 }
 
