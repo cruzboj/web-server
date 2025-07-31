@@ -15,13 +15,17 @@ function getDB(req, res) {
     });
 }
 
-function Register(req, res) {
+async function Register(req, res) {
   //Register
-  console.log(req.body);
   const { username, password, email } = req.body;
 
   if (!username || !password || !email) {
     return res.status(400).json({ error: "Missing fields" });
+  }
+  const usernameCheck = await pool.query("select * from users where username = $1",[username]);
+  const emailCheck = await pool.query("select * from users where email = $1",[email]);
+  if (usernameCheck.rows.length !== 0 || emailCheck.rows.length !== 0){
+    return res.status(401).json({"error":"Username or Email are already taken"})
   }
 
   const insertQuery = `
