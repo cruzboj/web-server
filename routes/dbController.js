@@ -36,9 +36,9 @@ async function Register(req, res) {
   }
 
   const insertQuery = `
-    INSERT INTO users (username, password, email)
-    VALUES ($1, $2, $3)
-    RETURNING *;
+	INSERT INTO users (username, password, email)
+	VALUES ($1, $2, $3)
+	RETURNING *;
   `;
 
   pool
@@ -61,7 +61,7 @@ function Login(req, res) {
   }
 
   const searchQuery = `
-    SELECT id,username, password, isadmin from users where username = $1`;
+	SELECT id,username, password, isadmin from users where username = $1`;
 
   pool
     .query(searchQuery, [username])
@@ -129,21 +129,32 @@ function getAllUsers(req, res) {
 function getAllPacks(req, res) {
   query = "select * from packs order by packid asc";
 
-  pool.query(query).then((response) => {
-    if (response.rows.length === 0) {
-      res.status(503).send("No matches");
-    }
-    res.status(200).send(response.rows);
-  });
+  pool
+    .query(query)
+    .then((response) => {
+      if (response.rows.length === 0) {
+        res.status(503).send("No matches");
+      }
+      res.status(200).send(response.rows);
+    })
+    .catch((err) => {
+      console.log("error fetching all packs", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    });
 }
 
-function getCardsFromPack(req, res) {
-  query = "select * from cards  where packid = $1 order by id asc";
+async function getCardsFromPack(req, res) {
   packid = req.params.packid;
-  console.log(packid);
+  const packCheck = await pool.query("select * from packs where packid=$1", [
+    packid,
+  ]);
+  if (packCheck.rows.length === 0){
+	return res.status(504).json({"error":"Pack Not Found"});
+  }
+  query = "select * from cards where packid = $1 order by id asc";
   pool.query(query, [packid]).then((response) => {
     if (response.rows.length === 0) {
-      return res.status(401).send(`No cards for ${packid}`);
+      return res.status(404).send(`No cards for this pack`);
     }
     return res.status(200).send(response.rows);
   });
