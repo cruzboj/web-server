@@ -148,8 +148,8 @@ async function getCardsFromPack(req, res) {
   const packCheck = await pool.query("select * from packs where packid=$1", [
     packid,
   ]);
-  if (packCheck.rows.length === 0){
-	return res.status(504).json({"error":"Pack Not Found"});
+  if (packCheck.rows.length === 0) {
+    return res.status(504).json({ error: "Pack Not Found" });
   }
   query = "select * from cards where packid = $1 order by id asc";
   pool.query(query, [packid]).then((response) => {
@@ -174,7 +174,7 @@ function createPack(req, res) {
     })
     .catch((error) => {
       console.log(`error creating card:`, error);
-      res.status(503).json({ error: "ERROR: " + error });
+      res.status(500).json({ error: "Internal Server Error" });
     });
 }
 
@@ -187,17 +187,19 @@ async function createCard(req, res) {
   const color_id = req.body.color_id;
   const packid = req.body.packid;
 
-  const packCheck = await pool.query("select * from packs where packid=$1",[packid]);
+  const packCheck = await pool.query("select * from packs where packid=$1", [
+    packid,
+  ]);
 
-	if (!name || !image_url || !color_id || !packid){
-		return res.status(403).json({"error":"Missing parameters"})
-	}
-	if (color_id > 2 || color_id < 1){
-		return res.status(403).json({"error":"Invalid Card Color"})
-	}
-	if(packCheck.rows.length === 0){
-		return res.status(404).json({"error":"Pack not found"})
-	}
+  if (!name || !image_url || !color_id || !packid) {
+    return res.status(403).json({ error: "Missing parameters" });
+  }
+  if (color_id > 2 || color_id < 1) {
+    return res.status(403).json({ error: "Invalid Card Color" });
+  }
+  if (packCheck.rows.length === 0) {
+    return res.status(404).json({ error: "Pack not found" });
+  }
 
   pool
     .query(query, [name, image_url, color_id, packid])
@@ -206,7 +208,7 @@ async function createCard(req, res) {
     })
     .catch((error) => {
       console.log(`error creating card:`, error);
-	  return res.status(500).json({"error":"Internal Server Error"})
+      return res.status(500).json({ error: "Internal Server Error" });
     });
 }
 
@@ -276,7 +278,7 @@ function getUserFromID(req, res) {
       if (response.rows.length === 0) {
         return res.status(404).json({ error: "userID not found" });
       }
-      return res.status(200).json(response.rows[0]);
+      return res.status(200).json(response.rows[0].username);
     })
     .catch((err) => {
       console.log("error getting user from id: ", err);

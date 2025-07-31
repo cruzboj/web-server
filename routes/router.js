@@ -22,9 +22,9 @@ router.get("/admin/packs", dbController.getAllPacks);//V
 router.get("/admin/cards/:packid", dbController.getCardsFromPack);//V
 router.post("/admin/createCard", JWT.authenticateAdmin, dbController.createCard);//V
 router.post("/admin/createPack",JWT.authenticateAdmin, dbController.createPack);//V
-router.delete("/admin/cards/:cardid", dbController.deleteCard);//V
-router.delete("/admin/packs/:packid", dbController.deletePack);//V
-router.get("/user/search/:username", dbController.searchForUser);//v
+router.delete("/admin/cards/:cardid", JWT.authenticateAdmin, dbController.deleteCard);//V
+router.delete("/admin/packs/:packid", JWT.authenticateAdmin,dbController.deletePack);//V
+router.get("/user/search/:username",dbController.searchForUser);//v
 router.get("/user/searchID/:userid", JWT.authenticateToken,dbController.getUserFromID)//v
 router.get("/cards/search/:cardid",JWT.authenticateToken,dbController.getCardFromID);//v
 router.get("/user",JWT.authenticateToken ,dbController.getUserInfo);//v
