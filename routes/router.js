@@ -35,7 +35,6 @@ router.patch("/user",JWT.authenticateToken,dbController.updateUser);//v
 
 //Pack Controller
 router.get("/user/packs",packController.getAvailablePacks);//v
-router.get("/user/packs/:packid", packController.getPackcards);//X----------------
 router.get("/pack/getPack/:packid",JWT.authenticateToken, packController.getCardFromPack);//X---------------
 router.post("/pack/insertCard",JWT.authenticateAdmin,packController.insertCard);//v
 

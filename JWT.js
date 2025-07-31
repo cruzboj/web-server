@@ -24,7 +24,7 @@ function authenticateAdmin(req,res,next){
     }
     jwt.verify(authHeader,SECRET_KEY,(err,decoded) => {
         if (err){
-            return res.status(403);
+            return res.status(403).json({"error":"Invalid Token"});
         }
         if(!decoded.isAdmin){
             return res.status(403).json({"error":"User is not an admin"});

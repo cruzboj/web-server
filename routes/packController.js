@@ -14,25 +14,26 @@ function getAvailablePacks(req, res) {
     });
 }
 
-async function getPackcards(req, res) {
-  const packid = req.params.packid;
-  const packCheck = await pool.query("select * from packs where packid = $1", [
-    packid,
-  ]);
-  if (packCheck.rows.length === 0) {
-    return res.status(404).json({ error: "Pack Not Found" });
-  }
-  const query = `SELECT * FROM cards WHERE packid = $1 ORDER BY RANDOM() LIMIT 6`;
-  pool
-    .query(query, [packid])
-    .then((response) => {
-      res.status(200).json(response.rows);
-    })
-    .catch((error) => {
-      console.error("Error fetching cards:", error);
-      res.status(500).json({ error: "Internal server error" });
-    });
-}
+// async function getPackcards(req, res) {
+//   const packid = req.params.packid;
+//   const packCheck = await pool.query("select * from packs where packid = $1", [
+//     packid,
+//   ]);
+//   if (packCheck.rows.length === 0) {
+//     return res.status(404).json({ error: "Pack Not Found" });
+//   }
+//   const query = `SELECT * FROM cards WHERE packid = $1 ORDER BY RANDOM() LIMIT 6`;
+//   pool
+//     .query(query, [packid])
+//     .then((response) => {
+//       res.status(200).json(response.rows);
+//     })
+//     .catch((error) => {
+//       console.error("Error fetching cards:", error);
+//       res.status(500).json({ error: "Internal server error" });
+//     });
+// }
+
 function getRandomCards(cards, count = 2) {
   if (!Array.isArray(cards) || cards.length <= count) {
     console.log("Card list is empty or not long enough");
@@ -164,7 +165,6 @@ async function insertCard(req, res) {
 
 module.exports = {
   getAvailablePacks,
-  getPackcards,
   getCardFromPack,
   insertCard,
 };
