@@ -19,9 +19,3 @@ const storage = new CloudinaryStorage({
 const parser = multer({ storage });
 
 module.exports = parser;
-
-// app.post('/news', parser.single('file'), (req, res) => {
-//   // req.file.path contains the cloudinary url
-//   const imgPath = req.file.path;
-//   // store imgPath and other data in DB
-// });
