@@ -8,6 +8,10 @@ function getTickets(req, res) {
         return res.status(401).send("No Tickets");
       }
       res.status(200).json(response.rows);
+    })
+    .catch((err) => {
+      console.log("error getting all tickets", err);
+      return res.status(500).json({"error":"Internal Server Error"});
     });
 }
 

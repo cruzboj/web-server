@@ -211,11 +211,16 @@ function getRandomCards(cards) {
   return cardsCopy.slice(0, count);
 }
 
-function insertCard(req, res) {
+async function insertCard(req, res) {
   const userid = req.body.userid;
   const cardid = req.body.cardid;
   if (!userid || !cardid) {
     return res.status(401).json({ error: "invalid parameters" });
+  }
+  const userCheck = await pool.query("select * from users where id = $1",[userid]);
+  const cardCheck = await pool.query("select * from cards where id = $1",[cardid]);
+  if (userCheck.rows.length === 0 || cardCheck.rows.length === 0){
+    return res.status(404).json({"error":"user or card are invalid"})
   }
   const query = `
   INSERT INTO usercards (userid, cardid, quantity)
