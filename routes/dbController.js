@@ -339,6 +339,10 @@ async function removeCardFromUser(req, res) {
   const userid = req.body.userid;
   const cardid = req.body.cardid;
 
+  const UserCardCheck = await pool.query("select * from usercards where userid=$1 and cardid = $2",[userid,cardid]);
+  if (UserCardCheck.rows.length === 0){
+	return res.status(401).json({"error":"User is not recognized or Does not own this card"});
+  }
   const client = await pool.connect(); // pg syntax
 
   try {
