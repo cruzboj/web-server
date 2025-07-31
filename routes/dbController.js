@@ -105,6 +105,10 @@ function getUserInfo(req, res) {
       return res.status(404).send("User Not found");
     }
     return res.status(200).send(response.rows[0]);
+  })
+  .catch((err) => {
+	console.log("Error getting user info",err);
+	return res.status(500).json({"error":"Internal Server Error"})
   });
 }
 
@@ -312,8 +316,12 @@ function getCardFromID(req, res) {
     });
 }
 
-function getCardsFromUser(req, res) {
+async function getCardsFromUser(req, res) {
   const userID = req.params.userid;
+  const userCheck = await pool.query("select * from users where id = $1",[userID]);
+  if (!userCheck){
+	return res.status(404).json({"error":"User Not Found"})
+  }
   const query =
     "select usercards.cardid,usercards.quantity,cards.name,cards.image_url,cards.color_id,cards.packid from usercards inner join cards on usercards.cardid = cards.id  where userid = $1";
   pool
