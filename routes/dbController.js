@@ -178,7 +178,7 @@ function createPack(req, res) {
     });
 }
 
-function createCard(req, res) {
+async function createCard(req, res) {
   query =
     "insert into cards (name,image_url,color_id,packid) values ($1,$2,$3,$4)";
 
@@ -187,11 +187,16 @@ function createCard(req, res) {
   const color_id = req.body.color_id;
   const packid = req.body.packid;
 
+  const packCheck = await pool.query("select * from packs where packid=$1",[packid]);
+
 	if (!name || !image_url || !color_id || !packid){
 		return res.status(403).json({"error":"Missing parameters"})
 	}
 	if (color_id > 2 || color_id < 1){
 		return res.status(403).json({"error":"Invalid Card Color"})
+	}
+	if(packCheck.rows.length === 0){
+		return res.status(404).json({"error":"Pack not found"})
 	}
 
   pool
