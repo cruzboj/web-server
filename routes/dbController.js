@@ -88,7 +88,7 @@ function Login(req, res) {
 function getUserInfo(req, res) {
   //Get user info for login
   const userID = req.user.id;
-  const query = "select username,isadmin,coins from users where id = $1";
+  const query = "select id,username,password,email,isadmin,coins, from users where id = $1";
   pool.query(query, [userID]).then((response) => {
     if (response.rows.length === 0) {
       return res.status(404).send("User Not found");
