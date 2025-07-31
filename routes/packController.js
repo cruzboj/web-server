@@ -16,9 +16,11 @@ function getAvailablePacks(req, res) {
 
 async function getPackcards(req, res) {
   const packid = req.params.packid;
-  const packCheck = await pool.query("select * from packs where packid = $1",[packid]);
-  if (packCheck.rows.length === 0){
-    return res.status(404).json({"error":"Pack Not Found"})
+  const packCheck = await pool.query("select * from packs where packid = $1", [
+    packid,
+  ]);
+  if (packCheck.rows.length === 0) {
+    return res.status(404).json({ error: "Pack Not Found" });
   }
   const query = `SELECT * FROM cards WHERE packid = $1 ORDER BY RANDOM() LIMIT 6`;
   pool
@@ -44,7 +46,6 @@ function getRandomCards(cards, count = 2) {
   }
   return cardsCopy.slice(0, count);
 }
-
 
 async function getCardFromPack(req, res) {
   try {

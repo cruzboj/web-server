@@ -44,11 +44,11 @@ async function Register(req, res) {
   pool
     .query(insertQuery, [username, password, email])
     .then((response) => {
-      res.status(201).json({"status":"Account Created Succesfully"});
+      res.status(201).json({ status: "Account Created Succesfully" });
     })
     .catch((err) => {
       console.error("Insert error:", err);
-      res.status(500).json({ error: "Internal Server Error"});
+      res.status(500).json({ error: "Internal Server Error" });
     });
 }
 
@@ -57,7 +57,6 @@ function Login(req, res) {
   if (!username || !password) {
     return res.status(400).json({
       error: "Missing fields",
-      fields: `username: ${username} password: ${password}`,
     });
   }
 
@@ -113,12 +112,18 @@ function getAllUsers(req, res) {
   //Get all users info
   query = `select * from users order by id asc`;
 
-  pool.query(query).then((response) => {
-    if (response.rows.length === 0) {
-      res.status(503).send("No matches");
-    }
-    res.status(200).send(response.rows);
-  });
+  pool
+    .query(query)
+    .then((response) => {
+      if (response.rows.length === 0) {
+        res.status(503).send("No matches");
+      }
+      res.status(200).send(response.rows);
+    })
+    .catch((err) => {
+      console.log("error getting all user data", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    });
 }
 
 function getAllPacks(req, res) {
